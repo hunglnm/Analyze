@@ -4,6 +4,8 @@ from lsp import  LSP
 from isis_intf import ISIS_INTF
 from l2vpn import L2VPN,VSI
 from vrf import VRF
+from static_route import Static_Route
+from netaddr import *
 from policy_map import Policy_map
 import MySQLdb
 import os
@@ -54,6 +56,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
         VRF.Hostname = hostname
         Policy_map.Hostname = hostname
         BFD.Hostname = hostname
+        Static_Route.Hostname = hostname
         if not os.path.exists(log_path + "Logs/Interface"):
             os.mkdir(log_path + "Logs/Interface")
         with open(log_path + "Logs/Interface/" + hostname + ".txt", "w") as f:
@@ -854,21 +857,33 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 f.write(list_line[i])
                 i += 1
         elif Dev == 'HW':
-            sql = "select Name,Encap,Isolate from vsi where Hostname='%s'" % hostname
+            sql = "select Name,Encap,Isolate,Classifier from vsi where Hostname='%s'" % hostname
             cursor.execute(sql)
             list_vsi = cursor.fetchall()
             dict_vsi = {}
+            dict_static_route = {}
             for item in list_vsi:
                 temp_vsi = VSI()
                 temp_vsi.name = item[0]
                 temp_vsi.encap = item[1]
                 temp_vsi.isolate = item[2]
+                temp_vsi.classifier = item[3]
                 dict_vsi[temp_vsi.name] = temp_vsi
+            sql = "select Name,Classifier from vrf where Hostname='%s'" % hostname
+            cursor.execute(sql)
+            list_vrf = cursor.fetchall()
+            dict_vrf = {}
+            for item in list_vrf:
+                temp_vrf = VRF()
+                temp_vrf.name = item[0]
+                temp_vrf.classifier = item[1]
+                dict_vrf[temp_vrf.name] = temp_vrf
             dict_ifl = {} #chua ifl information
             dict_policy_map = {} #chua policy map tren interface truc tiep
             dict_l2vpn = {} #chua l2
             dict_lsp = {} #chua lsp
             dict_bfd = {} #chua bfd info
+
              ###########IFD###########
             temp_ifd = IFD()
             temp_ifd.Name = "LoopBack"
@@ -969,11 +984,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 dict_ifl[temp_ifl_name].Description = re.match('^ description (.*)\n',
                                                                                list_line[i]).groups()[0]
                                 list_line[i] = "\n"
-                            elif re.match('^ ip binding vpn-instance (.*)\n',list_line[i]):
-                                dict_ifl[temp_ifl_name].VRF_Name = re.match('^ ip binding vpn-instance (.*)\n',
-                                                                            list_line[i]).groups()[0]
-                                dict_ifl[temp_ifl_name].Service = 'L3VPN'
-                                list_line[i] = "\n"
+
                             elif re.match('^ ip address (.*)\n',list_line[i]):
                                 if dict_ifl[temp_ifl_name].IP=='':
                                     dict_ifl[temp_ifl_name].IP = re.match('^ ip address (.*)\n',
@@ -1225,11 +1236,14 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 temp_search = re.match(' diffserv-mode pipe (.*)\n',list_line[i]).groups()
                                 dict_ifl[temp_ifl_name].classifier = temp_search[0]
                                 list_line[i]='\n'
-                            elif re.match(' ip binding vpn-instance ([\S]*)\n',list_line[i]):
-                                temp_search = re.match(' ip binding vpn-instance ([\S]*)\n',list_line[i]).groups()
-                                dict_ifl[temp_ifl_name].VRF_Name = temp_search[0]
-                                dict_ifl[temp_ifl_name].Service = 'L3VPN'
-                                list_line[i]='\n'
+                            elif re.match('^ ip binding vpn-instance ([\S]+)\n',list_line[i]):
+                                dict_ifl[temp_ifl_name].VRF_Name = re.match('^ ip binding vpn-instance ([\S]+)\n',
+                                                                            list_line[i]).groups()[0]
+                                dict_ifl[temp_ifl_name].Service = 'l3vpn'
+                                if dict_ifl[temp_ifl_name].VRF_Name in dict_vrf:
+                                    dict_ifl[temp_ifl_name].df_classifier = \
+                                        dict_vrf[dict_ifl[temp_ifl_name].VRF_Name].classifier
+                                list_line[i] = "\n"
                             elif re.match(' arp detect-mode unicast\n',list_line[i]):
                                 dict_ifl[temp_ifl_name].ARP_Unicast = True
                                 list_line[i] = '\n'
@@ -1277,6 +1291,8 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                         dict_vsi[dict_ifl[temp_ifl_name].BD_ID].encap
                                     dict_ifl[temp_ifl_name].Split_horizon = \
                                         dict_vsi[dict_ifl[temp_ifl_name].BD_ID].isolate
+                                    dict_ifl[temp_ifl_name].df_classifer = \
+                                        dict_vsi[dict_ifl[temp_ifl_name].BD_ID].classifier
                                 list_line[i]='\n'
                             elif re.match(' rrpp snooping enable\n',list_line[i]):
                                 dict_ifl[temp_ifl_name].rrpp=True
@@ -1527,10 +1543,55 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     temp_vrf = VRF()
                     temp_vrf.Name = dict_ifl[key].VRF_Name
                     temp_vrf.DHCP_Relay = True
-                    temp_vrf.insert_dhcp_relay(cursor)
+
+                    if 'Vlanif' in key:
+                        temp_ifl = IFL()
+                        temp_ifl.IFD = 'LoopBack'
+                        temp_ifl.Unit = dict_ifl[key].Unit
+                        temp_ifl.Unit1 = dict_ifl[key].Unit
+                        temp_ifl.VRF_Name = dict_ifl[key].VRF_Name
+
+                        if dict_ifl[key].IP!='':
+                            temp_network = dict_ifl[key].IP.split()[0]+'/'+dict_ifl[key].IP.split()[1]
+                            temp_static = Static_Route()
+
+                            temp_ip = IPNetwork(temp_network)
+                            temp_static.Net = str(temp_ip.network) + ' ' + str(temp_ip.netmask)
+                            temp_static.VRF_Name = dict_ifl[key].VRF_Name
+                            temp_static.description = 'Static route for DHCP clients'
+                            temp_static.insert(cursor)
+                            temp_vrf.Static_routing = True
+                            #temp_vrf.showdata()
+                            temp_ifl.IP = dict_ifl[key].IP.split()[0]+' ' + '255.255.255.255'
+
+                        #temp_ifl.IP_helper = dict_ifl[key].IP_helper
+                        temp_ifl.MTU = dict_ifl[key].MTU
+                        temp_ifl.Admin_status = dict_ifl[key].Admin_status
+                        dict_ifl['LoopBack'+str(temp_ifl.Unit)]=temp_ifl
+
+                        for key1 in dict_ifl:
+                            if (dict_ifl[key1].Unit == dict_ifl[key].Unit) and (dict_ifl[key1].Service=='vpls'):
+                                dict_ifl[key1].VRF_Name = dict_ifl[key].VRF_Name
+                                dict_ifl[key1].IP = 'lo0.'+str(dict_ifl[key].Unit)
+                                dict_ifl[key1].IP_helper = dict_ifl[key].IP_helper
+                                dict_ifl[key1].Service='L3VPN'
+                                dict_ifl[key1].BD_ID=''
+                                if dict_ifl[key].IP!='':
+                                    dict_ifl[key1].dhcp_gw=dict_ifl[key].IP.split()[0]
+                                #dict_ifl[key1].MTU = dict_ifl[key].MTU
+                        dict_ifl.pop(key)
+                    if temp_vrf.Static_routing == True:
+                        temp_vrf.update_dhcp_static(cursor)
+                    else:
+                        temp_vrf.insert_dhcp_relay(cursor)
+                elif (dict_ifl[key].IP_helper != ''):
+                    print 'Xay ra truong hop dhcp global'
+                    dict_ifl[key].showdata()
+
                 #if dict_ifl[key].IFD=='Loopback':
                 #    dict_ifl[key].showdata()
                 #dict_ifl[key].showdata()
+            for key in dict_ifl:
                 dict_ifl[key].insert(cursor)
             i = 0
             while i < total_lines:

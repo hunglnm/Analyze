@@ -58,6 +58,8 @@ class IFL:
         self.rrpp = False
         self.rrpp_vsi_list = ''
         self.vsi_encap = ''
+        self.dhcp_gw=''
+        self.df_classifier=''
 
     def showdata(self):
         attrs = vars(self)
@@ -71,9 +73,9 @@ class IFL:
                     "Service_pol_in,Service_pol_out,MTU,CLNS_MTU,Admin_status,Stitching,Switchport,Switch_mode,IP_helper"
                    ", Backup_path, FF_in,Trust_8021p,Classifier,ISIS_BFD,LDP_SYNC,IGMP,IGMP_SSM,IGMP_Static,DHCP_snoop,"
                    "DHCP_trust,Loop_detect,VRRP,VRRP_group,VRRP_vip,VRRP_prio,VRRP_delay,ARP_Unicast,ARP_exp,CCC_Intf,"
-                   "CCC_Name,RRPP,RRPP_vsi_list,VSI_encap,FF_out )"
+                   "CCC_Name,RRPP,RRPP_vsi_list,VSI_encap,FF_out,DHCP_GW,DF_classifier )"
                    "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,"
-                   "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
+                   "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
                     "ON DUPLICATE KEY UPDATE Unit1=VALUES(Unit1),Description=VALUES(Description), "
                     "Service=VALUES(Service),IP=VALUES(IP),Routing_type=VALUES(Routing_type), "
                     "ISIS_circuit_type=VALUES(ISIS_circuit_type),Routing_intf_type=VALUES(Routing_intf_type), "
@@ -92,7 +94,8 @@ class IFL:
                    "VRRP_group=VALUES(VRRP_group),VRRP_vip=VALUES(VRRP_vip),VRRP_prio=VALUES(VRRP_prio),"
                    "VRRP_delay=VALUES(VRRP_delay),ARP_Unicast=VALUES(ARP_Unicast),ARP_exp=VALUES(ARP_exp),"
                    "CCC_Intf=VALUES(CCC_Intf),CCC_Name=VALUES(CCC_Name),RRPP=VALUES(RRPP),RRPP_vsi_list="
-                   "VALUES(RRPP_vsi_list),VSI_encap=VALUES(VSI_encap),FF_out=VALUES(FF_out) ")
+                   "VALUES(RRPP_vsi_list),VSI_encap=VALUES(VSI_encap),FF_out=VALUES(FF_out),DHCP_GW=VALUES(DHCP_GW),"
+                   "DF_classifier=VALUES(DF_classifier) ")
         data_ifl = (self.IFD,IFL.Hostname,self.Unit,self.Unit1,self.Description,self.Service,
                     self.IP,self.Routing_type,self.ISIS_circuit_type,self.Routing_intf_type,
                     self.Intf_metric,self.RSVP,self.PIM,self.MPLS,self.SVLAN,self.CVLAN,self.Vlan_mapping,
@@ -102,7 +105,8 @@ class IFL:
                     self.Backup_path,self.FF_in,self.p1,self.classifier,self.isis_bfd,self.ldp_sync,self.igmp,
                     self.igmp_ssm,self.igmp_static,self.dhcp_snoop,self.dhcp_trust,self.loop_detect,self.vrrp,
                     self.vrrp_group,self.vrrp_vip,self.vrrp_prio,self.vrrp_delay,self.ARP_Unicast,self.ARP_exp,
-                    self.CCC_Intf,self.CCC_Name,self.rrpp,self.rrpp_vsi_list,self.vsi_encap,self.FF_out)
+                    self.CCC_Intf,self.CCC_Name,self.rrpp,self.rrpp_vsi_list,self.vsi_encap,self.FF_out,self.dhcp_gw,
+                    self.df_classifier)
         cursor.execute(add_ifl, data_ifl)
 
     def update_bgp_mpls(self, cursor):

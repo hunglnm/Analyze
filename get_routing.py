@@ -1127,7 +1127,10 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                 item.insert(cursor)
             print 'Update VRF Information'
             for item in dict_vrf:
-                dict_vrf[item].insert_new(cursor)
+                if dict_vrf[item].Static_routing == True:
+                    dict_vrf[item].insert_new(cursor)
+                else:
+                    dict_vrf[item].insert_new1(cursor)
             print 'Data isis:'
             for item in router_isis:
                 item.insert(cursor)

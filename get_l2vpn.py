@@ -274,12 +274,14 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
             VSI.Hostname = hostname
             while i < total_lines:
                 if re.match('vsi ([\S]*)(?: ([\S]*))?\n',list_line[i]):
+                    print i,list_line[i]
                     temp_vsi = VSI()
                     temp_search = re.match('vsi ([\S]*)(?: ([\S]*))?\n',list_line[i]).groups()
-                    temp_vsi.name =  temp_search[0]
-                    if  temp_search[1] is not None:
+                    temp_vsi.name = temp_search[0]
+                    if temp_search[1] is not None:
                         temp_vsi.type = temp_search[1]
                     i += 1
+                    j=i
                     while list_line[i]!='#\n':
                         if re.match('^  vsi-id ([\d]*)\n',list_line[i]):
                             temp_vsi.vsi_id = int(re.match('^  vsi-id ([\d]*)\n',list_line[i]).group(1))
@@ -352,12 +354,14 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                             list_peer[temp_l2vpn.Peer+'/'+str(temp_l2vpn.VC_ID)]=temp_l2vpn
                         elif re.match(' shutdown\n',list_line[i]):
                             temp_vsi.Admin_status = False
-                            list_line[i + 1] = '\n'
+                            list_line[i] = '\n'
                         i += 1
+                    temp_vsi.showdata()
                     list_l2vpn[temp_vsi.name]=temp_vsi
                     i -= 1
                 i += 1
             for key in list_l2vpn:
+
                 list_l2vpn[key].insert(cursor)
             for key in list_peer:
                 list_peer[key].insert(cursor)

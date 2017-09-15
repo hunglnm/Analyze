@@ -684,7 +684,7 @@ def delete_db(hostname, conn, cursor):
         list_db=['acl', 'acl_detail', 'bgp', 'classmap', 'dhcp', 'ifd', 'ifl', 'igmp_ssm', 'isis', 'isis_intf', \
                  'l2vpn', 'lsp', 'ospf', 'ospf_passive', 'path', 'path_detail', 'policy_map', 'pw_class', \
                  'redistribute', 'route_map', 'router', 'server', 'sla', 'static_route', 'tldp_peer', \
-                 'vlan', 'vrf', 'vrf_ie']
+                 'vlan', 'vrf', 'vrf_ie', 'vsi','bfd']
         print 'DB is deleting information of ', hostname
         for item in list_db:
             print 'You re working with ' + item

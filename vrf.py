@@ -55,12 +55,20 @@ class VRF:
         data_l3vpn = (VRF.Hostname, self.Name,self.DHCP_Relay)
         cursor.execute(add_l3vpn, data_l3vpn)
 
+    def update_dhcp_static(self,cursor):
+        add_l3vpn = ("INSERT INTO VRF "
+                     "(Hostname,Name,Static_routing,DHCP_Relay) "
+                     "VALUES (%s,%s,%s,%s) "
+                     "ON DUPLICATE KEY UPDATE Static_routing=VALUES(Static_routing),DHCP_Relay=VALUES(DHCP_Relay)")
+        data_l3vpn = (VRF.Hostname, self.Name,self.Static_routing,self.DHCP_Relay)
+        cursor.execute(add_l3vpn, data_l3vpn)
+
     def insert_static(self,cursor):
         add_l3vpn = ("INSERT INTO VRF "
                      "(Hostname,Name,Static_routing) "
                      "VALUES (%s,%s,%s) "
                      "ON DUPLICATE KEY UPDATE Static_routing=VALUES(Static_routing)")
-        data_l3vpn = (VRF.Hostname, self.Name,self.Static_routing)
+        data_l3vpn = (VRF.Hostname, self.Name, self.Static_routing)
         cursor.execute(add_l3vpn, data_l3vpn)
 
     def insert_new(self,cursor):
@@ -69,6 +77,14 @@ class VRF:
                      "VALUES (%s,%s,%s,%s,%s) "
                      "ON DUPLICATE KEY UPDATE Static_routing=VALUES(Static_routing),BGP=VALUES(BGP),FRR=VALUES(FRR)")
         data_l3vpn = (VRF.Hostname, self.Name,self.Static_routing,self.BGP,self.frr)
+        cursor.execute(add_l3vpn, data_l3vpn)
+
+    def insert_new1(self,cursor):
+        add_l3vpn = ("INSERT INTO VRF "
+                     "(Hostname,Name,BGP,FRR) "
+                     "VALUES (%s,%s,%s,%s) "
+                     "ON DUPLICATE KEY UPDATE BGP=VALUES(BGP),FRR=VALUES(FRR)")
+        data_l3vpn = (VRF.Hostname, self.Name,self.BGP,self.frr)
         cursor.execute(add_l3vpn, data_l3vpn)
 
     def insert_bgp(self,cursor):
