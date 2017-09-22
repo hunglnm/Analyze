@@ -1391,7 +1391,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 dict_ifl[temp_ifl_name].Intf_metric= int(re.match(' isis cost (.*)\n',
                                                                          list_line[i]).groups()[0])
                                 list_line[i] = '\n'
-                            elif re.match(' isis authentication-mode md5 cipher [\S]+\n',list_line[i]):
+                            elif re.match(' isis authentication-mode md5 .*\n',list_line[i]):
                                 dict_ifl[temp_ifl_name].isis_authen = True
                                 list_line[i]='\n'
                             elif re.match(' pim sm\n',list_line[i]):
