@@ -81,8 +81,8 @@ def get_lsp_path_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cur
                 i += 1
         elif Dev == 'HW':
             while i < total_lines:
-                if re.match('^ explicit-path ([\S]*)\n',list_line[i]):
-                    temp_search = re.match('^ explicit-path ([\S]*)\n',list_line[i]).groups()
+                if re.match('^[\s]*explicit-path ([\S]*)\n',list_line[i]):
+                    temp_search = re.match('^[\s]*explicit-path ([\S]*)\n',list_line[i]).groups()
                     temp_path = Path()
                     temp_path.Name = temp_search[0]
                     temp_path_name = temp_search[0]
@@ -92,8 +92,8 @@ def get_lsp_path_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cur
                     temp_index = 0
                     i +=1
                     while list_line[i]!='#\n':
-                        if re.match('  next hop ((?:[\d]{1,3}[\.]){3}[\d]{1,3})\n',list_line[i]):
-                            temp_search = re.match('  next hop ((?:[\d]{1,3}[\.]){3}[\d]{1,3})\n',list_line[i]).groups()
+                        if re.match('^[\s]*next hop ((?:[\d]{1,3}[\.]){3}[\d]{1,3})\n',list_line[i]):
+                            temp_search = re.match('^[\s]*next hop ((?:[\d]{1,3}[\.]){3}[\d]{1,3})\n',list_line[i]).groups()
                             temp_path_detail = Path_detail()
                             temp_path_detail.Index_1 = temp_index
                             temp_path_detail.Name = temp_path_name

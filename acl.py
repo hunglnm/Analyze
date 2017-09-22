@@ -60,5 +60,14 @@ class ACL_detail:
         cursor.execute(add_acl_detail, data_acl_detail)
 
     @staticmethod
-    def delete(self, cursor):
-        delete_data
+    def convert_acl_detail(info):
+        temp_acl_detail = ACL_detail()
+        temp_acl_detail.Name = info[0]
+        temp_acl_detail.Index_1 = info[1]
+        temp_acl_detail.Action_1 = info[2]
+        temp_acl_detail.Protocol_1 = info[3]
+        temp_acl_detail.Prefix_Source = info[4]
+        temp_acl_detail.S_Port = info[5]
+        temp_acl_detail.Prefix_Dest = info[6]
+        temp_acl_detail.D_Port = info[7]
+        return temp_acl_detail

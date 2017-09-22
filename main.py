@@ -18,6 +18,7 @@ from get_acl import *
 from get_server import *
 from get_route_map import *
 import MySQLdb
+from get_policy_db import *
 
 
 def about_router(s_path, conn, cursor):
@@ -707,6 +708,7 @@ def delete_db(hostname, conn, cursor):
 def menu_1():
     print "1.Get informations of routers"
     print "2.Debug"
+    print "3.Lay thong tin policy+acl"
     print "e.Exit"
     sel_index = raw_input("Please choose above options:")
     return sel_index
@@ -840,6 +842,31 @@ def main():
                 elif sel_index1 == "17":
                     about_route_map(s_path)
                 sel_index = menu_1()
+            elif sel_index == '3':
+                sql = 'select hostname from router'
+                cursor.execute(sql)
+                list_rows = cursor.fetchall()
+                list_router = list(map(lambda x: x[0],list_rows))
+                f = open(s_path + "policy_map.txt", "w")
+                for item in list_router:
+                    f.write('-----------------------------------\n')
+                    f.write('Thong tin cua router ' + item + '\n')
+                    list_policy_map = POLICYMAP.query_policy_name(item, cursor)
+                    for key in list_policy_map:
+                        f.write('Policy: ' + key + '\n')
+                        if len(list_policy_map[key].mf_list) > 0:
+                            for tmp_mf in list_policy_map[key].mf_list:
+                                f.write('**MF chi tiet:\n')
+                                attrs1 = vars(tmp_mf)
+                                f.write(','.join("%s: %s" % item2 for item2 in attrs1.items()) + '\n')
+                        f.write('-------------\n')
+                        if len(list_policy_map[key].acl_list) > 0:
+                            for tmp_acl in list_policy_map[key].acl_list:
+                                f.write('**ACL chi tiet:\n')
+                                attrs1 = vars(tmp_acl)
+                                f.write(','.join("%s: %s" % item2 for item2 in attrs1.items()) + '\n')
+                f.close()
+                sel_index = 'e'
     except MySQLdb.Error as error:
         print(error)
     finally:

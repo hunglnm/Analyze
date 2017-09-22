@@ -4,6 +4,18 @@ import os
 import re
 
 
+class classifier:
+    def __init__(self):
+        self.name = ''
+        self.acl = ''
+        self.dscp =''
+        self.p1=''
+
+    def showdata(self):
+        attrs = vars(self)
+        print  ','.join("%s: %s" % item for item in attrs.items())
+
+
 class behaviour:
     def __init__(self):
         self.name = ''
@@ -210,9 +222,54 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
         elif Dev == 'HW':
             list_policy_map = {}
             list_ba = {}
+            list_class = {}
             #get behavior
+            i=0
             while i < total_lines:
-                if re.match('traffic behavior .*',list_line[i]):
+                if re.match('traffic classifier ([\S]+) operator or\n',list_line[i]):
+                    #print 'Match classifier:',i,list_line[i]
+                    temp_classifier = classifier()
+                    temp_classifier.name = re.match('traffic classifier ([\S]+) operator or\n',list_line[i]).groups()[0]
+                    i += 1
+                    while (re.match('^traffic classifier .*\n',list_line[i])is None) and (list_line[i]!='#\n'):
+                        #print i,list_line[i]
+                        if re.match('if-match dscp ([\S]+)',list_line[i].strip()):
+                            temp_search = re.match('if-match dscp ([\S]+)',list_line[i].strip()).groups()
+                            #print temp_search
+                            if temp_classifier.dscp=='':
+                                temp_classifier.dscp = temp_search[0]
+                            else:
+                                temp_classifier.dscp = temp_classifier.dscp + ' ' + temp_search[0]
+                            list_line[i]='\n'
+                        elif re.match('if-match acl name ([\S]+)',list_line[i].strip()):
+                            temp_search=re.match('if-match acl name ([\S]+)',list_line[i].strip()).groups()
+                            if temp_classifier.acl=='':
+                                temp_classifier.acl = temp_search[0]
+                            else:
+                                temp_classifier.acl = temp_classifier.acl + ' ' + temp_search[0]
+                            list_line[i]='\n'
+                        elif re.match('if-match acl ([\S]+)',list_line[i].strip()):
+                            temp_search = re.match('if-match acl ([\S]+)', list_line[i].strip()).groups()
+                            if temp_classifier.acl=='':
+                                temp_classifier.acl = temp_search[0]
+                            else:
+                                temp_classifier.acl = temp_classifier.acl + ' ' + temp_search[0]
+                            list_line[i]='\n'
+                        elif re.match('if-match 8021p ([\d]+)',list_line[i].strip()):
+                            temp_search = re.match('if-match 8021p ([\d]+)', list_line[i].strip()).groups()
+                            if temp_classifier.p1=='':
+                                temp_classifier.p1 = temp_search[0]
+                            else:
+                                temp_classifier.p1 = temp_classifier.p1 + ' ' + temp_search[0]
+                            list_line[i]='\n'
+                        elif re.match('if-match any',list_line[i].strip()):
+                            temp_classifier.acl = 'any'
+                        i += 1
+                    #temp_classifier.showdata()
+                    list_class[temp_classifier.name]=temp_classifier
+                    i -= 1
+                elif re.match('traffic behavior .*',list_line[i]):
+                    #print 'Match BA:', i, list_line[i]
                     temp_behavior = behaviour()
                     temp_behavior.name = list_line[i].strip().split()[-1]
                     i += 1
@@ -247,45 +304,75 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                                         temp_behavior.yellow = item
                                     elif re.match('red .*', item):
                                         temp_behavior.red = item
-                        elif re.match('remark dscp (.*)\n',list_line[i].strip()):
-                            temp_behavior.remark_dscp=re.match('remark dscp (.*)\n',list_line[i].strip()).group(1)
-                        elif re.match('remark ip-precedence (.*)\n',list_line[i].strip()):
-                            temp_behavior.remark_ip=re.match('remark ip-precedence(.*)\n',list_line[i].strip()).group(1)
-                        elif re.match('remark 8021p (.*)\n',list_line[i].strip()):
-                            temp_behavior.remark_8021p = re.match('remark 8021p (.*)\n',list_line[i].strip()).group(1)
-                        elif re.match('remark mpls-exp (.*)\n',list_line[i].strip()):
-                            temp_behavior.remark_exp=re.match('remark mpls-exp (.*)\n',list_line[i].strip()).group(1)
+                        elif re.match(' user-queue cir ([\d]+) pir ([\d]+) flow-mapping ([\S]+)\n',list_line[i]):
+                            temp_search = re.match(' user-queue cir ([\d]+) pir ([\d]+) flow-mapping ([\S]+)\n',
+                                                   list_line[i]).groups()
+                            temp_behavior.cir = temp_search[0]
+                            temp_behavior.pir = temp_search[1]
+                            temp_behavior.service_class = temp_search[2]
+                            list_line[i] = '\n'
+                        elif re.match('remark dscp (.*)',list_line[i].strip()):
+                            temp_behavior.remark_dscp=re.match('remark dscp (.*)',list_line[i].strip()).group(1)
+                            list_line[i] = '\n'
+                        elif re.match('remark ip-precedence (.*)',list_line[i].strip()):
+                            temp_behavior.remark_ip=re.match('remark ip-precedence(.*)',list_line[i].strip()).group(1)
+                            list_line[i] = '\n'
+                        elif re.match('remark 8021p (.*)',list_line[i].strip()):
+                            temp_behavior.remark_8021p = re.match('remark 8021p (.*)',list_line[i].strip()).group(1)
+                            list_line[i] = '\n'
+                        elif re.match('remark mpls-exp (.*)',list_line[i].strip()):
+                            temp_behavior.remark_exp=re.match('remark mpls-exp (.*)',list_line[i].strip()).group(1)
+                            list_line[i] = '\n'
+                        elif re.match(' service-class ([\S]+) color ([\S]+)\n',list_line[i]):
+                            temp_behavior.service_class = re.match(' service-class ([\S]+) color ([\S]+)\n',
+                                                                  list_line[i]).groups()[0]
+                            temp_behavior.green = re.match(' service-class ([\S]+) color ([\S]+)\n',
+                                                                  list_line[i]).groups()[1]
+                            list_line[i] = '\n'
                         i += 1
                     i -=1
                     if temp_behavior.action=='':
                         temp_behavior.action = 'permit'
                     list_ba[temp_behavior.name] = temp_behavior
                 elif re.match('traffic policy .*\n',list_line[i]):
-                    #print 'Co match policy'
-                    temp_policy_map = Policy_map()
-                    temp_policy_map.Name = list_line[i].strip().split()[-1]
+                    #print 'Match Policy match', i, list_line[i]
+                    index_pol = 0
+                    temp_policy_map_name = list_line[i].strip().split()[-1]
                     i += 1
-                    while (list_line[i]!='#\n')and('traffic policy' not in list_line[i]):
-                        if re.match(' classifier (.*) behavior (.*)\n',list_line[i]):
-                            temp_policy_map.Class = re.match(' classifier (.*) behavior (.*)\n',list_line[i]).group(1)
-                            temp_str = re.match(' classifier (.*) behavior (.*)\n',list_line[i]).group(2)
-                            if temp_str in list_ba:
-                                temp_policy_map.Set_prec_transmit = list_ba[temp_str].remark_ip
-                                temp_policy_map.Exceed_action = list_ba[temp_str].red
-                                temp_policy_map.CIR = list_ba[temp_str].cir
-                                temp_policy_map.PIR = list_ba[temp_str].pir
-                                temp_policy_map.BC = list_ba[temp_str].cbs
-                                temp_policy_map.Set_EXP = list_ba[temp_str].remark_exp
-                                temp_policy_map.BE = list_ba[temp_str].remark_dscp
-                                temp_policy_map.p1 = list_ba[temp_str].remark_8021p
+                    while (list_line[i]!='#\n')and(not re.match('^traffic policy .*\n',list_line[i])):
+                        if re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]):
+                            #print '1 Policy duoc tao ra:'
+                            temp_policy_map = Policy_map()
+                            temp_policy_map.Name=temp_policy_map_name
+                            temp_class_name = re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]).group(1)
+                            temp_ba_name = re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]).group(2)
+                            if temp_class_name in list_class:
+                                temp_policy_map.Class = list_class[temp_class_name].name
+                                temp_policy_map.acl = list_class[temp_class_name].acl
+                                temp_policy_map.dscp = list_class[temp_class_name].dscp
+                                temp_policy_map.p1 = list_class[temp_class_name].p1
+                            if temp_ba_name in list_ba:
+                                temp_policy_map.Set_prec_transmit = list_ba[temp_ba_name].remark_ip
+                                temp_policy_map.Exceed_action = list_ba[temp_ba_name].red
+                                temp_policy_map.CIR = list_ba[temp_ba_name].cir
+                                temp_policy_map.PIR = list_ba[temp_ba_name].pir
+                                temp_policy_map.BC = list_ba[temp_ba_name].cbs
+                                temp_policy_map.Set_EXP = list_ba[temp_ba_name].remark_exp
+                                temp_policy_map.set_dscp = list_ba[temp_ba_name].remark_dscp
+                                temp_policy_map.set_p1 = list_ba[temp_ba_name].remark_8021p
+                                temp_policy_map.FC = list_ba[temp_ba_name].service_class
+                                temp_policy_map.LP = list_ba[temp_ba_name].green
+                            #temp_policy_map.showdata()
+                            list_policy_map[temp_policy_map.Name+'/'+temp_policy_map.Class] = temp_policy_map
                             list_line[i] = '\n'
                         i += 1
-                    list_policy_map[temp_policy_map.Name] = temp_policy_map
+
                     i -= 1
                 i += 1
             #for key in list_ba:
             #    list_ba[key].showdata()
             for key in list_policy_map:
+                #list_policy_map[key].showdata()
                 list_policy_map[key].insert(cursor)
             i = 0
             while i < total_lines:

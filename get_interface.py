@@ -878,6 +878,11 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 temp_vrf.name = item[0]
                 temp_vrf.classifier = item[1]
                 dict_vrf[temp_vrf.name] = temp_vrf
+            sql = "select Name from policy_map " \
+                  "where Hostname = '%s' and ( ACL='' or ACL='any') and CIR > 0 group by Name" % hostname
+            cursor.execute(sql)
+            list_rows = cursor.fetchall()
+            list_policer = list(map(lambda x:x[0],list_rows))
             dict_ifl = {} #chua ifl information
             dict_policy_map = {} #chua policy map tren interface truc tiep
             dict_l2vpn = {} #chua l2
@@ -899,7 +904,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     #print tmp_result.groups()
                     temp_ifd = IFD()
                     while list_line[i] != '#\n':
-                        if re.match('^interface .*',list_line[i]):
+                        if re.match('^interface .*\n',list_line[i]):
                             temp_ifd.Name = tmp_result[0]
                             list_ifd[temp_ifd.Name] = temp_ifd
                             dict_ifd[temp_ifd.Name] = 5000
@@ -920,8 +925,8 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                             #print 'Gia tri bundle-id :', tmp_str.groups()
                             temp_ifd.Parent_link = tmp_str.groups()[0]
                             list_ae_child.append(temp_ifd.Name)
-                            list_ifd['Eth-Trunk' + temp_ifd.Parent_link].AE_mode = temp_ifd.AE_mode
-                            list_ifd['Eth-Trunk' + temp_ifd.Parent_link].AE_type = temp_ifd.AE_type
+                            temp_ifd.AE_mode = list_ifd['Eth-Trunk' + temp_ifd.Parent_link].AE_mode
+                            temp_ifd.AE_type = list_ifd['Eth-Trunk' + temp_ifd.Parent_link].AE_type
                             list_line[i] = "\n"
                         elif re.match(' distribute-weight ([\d]*)\n',list_line[i]):
                             temp_ifd.weight = int(re.match(' distribute-weight ([\d]*)\n',list_line[i]).groups()[0])
@@ -929,12 +934,17 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                         elif re.match(' port default vlan (.*)\n',list_line[i]):
                             temp_ifd.native_vlan = re.match(' port default vlan (.*)\n',list_line[i]).groups()[0]
                         elif 'mode lacp-static' in list_line[i]:
+
                             temp_ifd.AE_type = 'lacp'
                             temp_ifd.AE_mode = 'active'
+                            #print 'Matching lacp', temp_ifd.showdata()
+                            #list_line[i] = "\n"
                         elif re.match('^ shutdown\n', list_line[i]):
                             temp_ifd.Admin_status = False
                         i += 1
                     list_ifd[temp_ifd.Name] = temp_ifd
+                    #temp_ifd.showdata()
+                    i -= 1
                 i += 1
             i = 0
             while i < total_lines:
@@ -995,15 +1005,36 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 if dict_ifl[temp_ifl_name].VRF_Name == '':
                                     dict_ifl[temp_ifl_name].Service = 'L3'
                                 list_line[i] = "\n"
-                            elif re.match('^ vlan-type dot1q (.*)\n',list_line[i]):
-                                dict_ifl[temp_ifl_name].SVLAN = re.match('^ vlan-type dot1q (.*)\n', list_line[i]).groups()[0]
+                            elif re.match('^ vlan-type dot1q ([\d]+)( vlan-group ([\d]+))?\n',list_line[i]):
+                                temp_search=re.match('^ vlan-type dot1q ([\d]+)(?: vlan-group ([\d]+))?\n', list_line[i]).groups()
+                                dict_ifl[temp_ifl_name].SVLAN = temp_search[0]
                                 dict_ifl[temp_ifl_name].Vlan_mapping = 'pop'
                                 dict_ifl[temp_ifl_name].Vlan_translate = '1'
+                                if temp_search[1] is not None:
+                                    if (temp_ifl_name + '/' + temp_search[1] + '_in') in dict_policy_map:
+                                        dict_ifl[temp_ifl_name].Service_pol_in = \
+                                            dict_policy_map[temp_ifl_name + '/' + temp_search[1] + '_in'].Name
+                                    if (temp_ifl_name + '/' + temp_search[1] + '_out') in dict_policy_map:
+                                        #print 'Gia tri policy:',dict_policy_map[temp_ifd_name + '/' + temp_search[2] + '_out'].Name
+                                        dict_ifl[temp_ifl_name].Service_pol_out = \
+                                            dict_policy_map[temp_ifl_name + '/' + temp_search[2] + '_out'].Name
                                 list_line[i] = "\n"
-                            elif re.match('^ dot1q termination vid (.*)\n',list_line[i]):
-                                dict_ifl[temp_ifl_name].SVLAN = re.match('^ dot1q termination vid (.*)\n', list_line[i]).groups()[0]
+                            elif re.match('^ dot1q termination vid ([\d]+)( vlan-group ([\d]+))?\n',list_line[i]):
+                                temp_search = re.match('^ dot1q termination vid ([\d]+)(?: vlan-group ([\d]+))?\n',
+                                                                         list_line[i]).groups()
+                                dict_ifl[temp_ifl_name].SVLAN = temp_search[0]
                                 dict_ifl[temp_ifl_name].Vlan_mapping = 'pop'
                                 dict_ifl[temp_ifl_name].Vlan_translate = '1'
+                                if temp_search[1] is not None:
+                                    #if temp_ifl_name=='GigabitEthernet4/1/2.2708':
+                                    #    print 'Key:',temp_ifl_name + '/' + temp_search[1] +'_in'
+                                    if (temp_ifl_name + '/' + temp_search[1] +'_in') in dict_policy_map:
+                                        #print 'Matching...'
+                                        dict_ifl[temp_ifl_name].Service_pol_in =\
+                                        dict_policy_map[temp_ifl_name + '/' + temp_search[1] +'_in'].Name
+                                    if (temp_ifl_name + '/' + temp_search[1] +'_out') in dict_policy_map:
+                                        dict_ifl[temp_ifl_name].Service_pol_out =\
+                                        dict_policy_map[temp_ifl_name + '/' + temp_search[1] +'_out'].Name
                                 list_line[i] = "\n"
                             elif re.match(' port trunk allow-pass vlan (.*)\n',list_line[i]):
                                 temp_status = True
@@ -1068,14 +1099,26 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 if (len(temp_vlan_list)>0)and((temp_ifd_name+'.0')==temp_ifl_name):
                                     for idx in temp_vlan_list:
                                         if temp_search[1] == 'inbound':
-                                            dict_ifl[temp_ifd_name+'.'+idx].FF_in = temp_search[0]
+                                            if temp_search[0] in list_policer:
+                                                dict_ifl[temp_ifd_name+'.'+idx].Service_pol_in = temp_search[0]
+                                            else:
+                                                dict_ifl[temp_ifd_name+'.'+idx].FF_in = temp_search[0]
                                         elif temp_search[1] == 'outbound':
-                                            dict_ifl[temp_ifd_name+'.'+idx].FF_out = temp_search[0]
+                                            if temp_search[0] in list_policer:
+                                                dict_ifl[temp_ifd_name+'.'+idx].Service_pol_out = temp_search[0]
+                                            else:
+                                                dict_ifl[temp_ifd_name+'.'+idx].FF_out = temp_search[0]
                                 else:
                                     if temp_search[1] == 'inbound':
-                                        dict_ifl[temp_ifl_name].FF_in = temp_search[0]
+                                        if temp_search[0] in list_policer:
+                                            dict_ifl[temp_ifl_name].Service_pol_in = temp_search[0]
+                                        else:
+                                            dict_ifl[temp_ifl_name].FF_in = temp_search[0]
                                     elif temp_search[1] == 'outbound':
-                                        dict_ifl[temp_ifl_name].FF_out = temp_search[0]
+                                        if temp_search[0] in list_policer:
+                                            dict_ifl[temp_ifl_name].Service_pol_out = temp_search[0]
+                                        else:
+                                            dict_ifl[temp_ifl_name].FF_out = temp_search[0]
                                 list_line[i]='\n'
                             elif re.match(' traffic-policy ([\S]*) (inbound|outbound) vlan (.*)\n',list_line[i]):
                                 temp_search =re.match(' traffic-policy ([\S]*) (inbound|outbound) vlan (.*)\n',
@@ -1098,9 +1141,15 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     temp_vlan_list.append(temp_search[2])
                                 for item in temp_vlan_list:
                                     if temp_search[1] == 'inbound':
-                                        dict_ifl[temp_ifd_name+'.'+ item].FF_in = temp_search[0]
+                                        if temp_search[0] in list_policer:
+                                            dict_ifl[temp_ifd_name + '.' + item].Service_pol_in = temp_search[0]
+                                        else:
+                                            dict_ifl[temp_ifd_name+'.'+ item].FF_in = temp_search[0]
                                     elif temp_search[1] == 'outbound':
-                                        dict_ifl[temp_ifd_name+'.'+ item].FF_out = temp_search[0]
+                                        if temp_search[0] in list_policer:
+                                            dict_ifl[temp_ifd_name + '.' + item].Service_pol_out = temp_search[0]
+                                        else:
+                                            dict_ifl[temp_ifd_name+'.'+ item].FF_out = temp_search[0]
                                 list_line[i] = '\n'
 
                             elif re.match(' port isolate-state enable vlan (.*)\n',list_line[i]):
@@ -1160,11 +1209,21 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
 
                                         if temp_search[4] is not None:
                                             if temp_search[4] == 'inbound':
-                                                dict_policy_map[temp_ifd_name + '/' + temp_name + '_in'] = temp_policy_map
+                                                if temp_ifl_name == temp_ifd_name + '.0' :
+                                                    dict_policy_map[temp_ifd_name + '/' + temp_name + '_in'] = temp_policy_map
+                                                else:
+                                                    dict_policy_map[
+                                                        temp_ifl_name + '/' + temp_name + '_in'] = temp_policy_map
                                             elif temp_search[4] == 'outbound':
-                                                dict_policy_map[temp_ifd_name + '/' + temp_name + '_out'] = temp_policy_map
-                                            #print 'Key:',temp_ifd_name + '/' + temp_name
-                                            #temp_policy_map.showdata()
+                                                if temp_ifl_name == temp_ifd_name + '.0':
+                                                    dict_policy_map[temp_ifd_name + '/' + temp_name + '_out'] = temp_policy_map
+                                                else:
+                                                    dict_policy_map[
+                                                        temp_ifl_name + '/' + temp_name + '_out'] = temp_policy_map
+                                            #if temp_ifd_name=='GigabitEthernet4/1/2':
+                                            #    print 'Key:',temp_ifd_name + '/' + temp_name
+                                            #    print 'IFL:',temp_ifl_name
+                                            #    temp_policy_map.showdata()
                                     elif list_line[i]==' [\S].*\n':
                                         break
                                     i += 1
@@ -1184,12 +1243,12 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 else:
                                     dict_ifl[temp_ifl_name].SVLAN = dict_ifl[temp_ifl_name].SVLAN + ',' + temp_str
                                 if temp_search[1] is not None:
-                                    if (temp_ifd_name + '/' + temp_search[1] +'_in') in dict_policy_map:
+                                    if (temp_ifl_name + '/' + temp_search[1] +'_in') in dict_policy_map:
                                         dict_ifl[temp_ifl_name].Service_pol_in =\
-                                        dict_policy_map[temp_ifd_name + '/' + temp_search[1] +'_in'].Name
-                                    if (temp_ifd_name + '/' + temp_search[1] +'_out') in dict_policy_map:
+                                        dict_policy_map[temp_ifl_name + '/' + temp_search[1] +'_in'].Name
+                                    if (temp_ifl_name + '/' + temp_search[1] +'_out') in dict_policy_map:
                                         dict_ifl[temp_ifl_name].Service_pol_out =\
-                                        dict_policy_map[temp_ifd_name + '/' + temp_search[1] +'_out'].Name
+                                        dict_policy_map[temp_ifl_name + '/' + temp_search[1] +'_out'].Name
                                 dict_ifl[temp_ifl_name].Vlan_mapping='push'
                                 dict_ifl[temp_ifl_name].Vlan_translate = '1'
                                 #if hostname == 'LSN02VLG':
@@ -1221,14 +1280,17 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     dict_ifl[temp_ifl_name].Vlan_mapping = 'pop'
                                     dict_ifl[temp_ifl_name].Vlan_translate = '2'
                                 if temp_search[2] is not None:
-                                    if (temp_ifd_name + '/' + temp_search[2] + '_in') in dict_policy_map:
+                                    if (temp_ifl_name + '/' + temp_search[2] + '_in') in dict_policy_map:
                                         dict_ifl[temp_ifl_name].Service_pol_in = \
-                                            dict_policy_map[temp_ifd_name + '/' + temp_search[2] + '_in'].Name
-                                    if (temp_ifd_name + '/' + temp_search[2] + '_out') in dict_policy_map:
+                                            dict_policy_map[temp_ifl_name + '/' + temp_search[2] + '_in'].Name
+                                    if (temp_ifl_name + '/' + temp_search[2] + '_out') in dict_policy_map:
                                         #print 'Gia tri policy:',dict_policy_map[temp_ifd_name + '/' + temp_search[2] + '_out'].Name
                                         dict_ifl[temp_ifl_name].Service_pol_out = \
-                                            dict_policy_map[temp_ifd_name + '/' + temp_search[2] + '_out'].Name
+                                            dict_policy_map[temp_ifl_name + '/' + temp_search[2] + '_out'].Name
                                 list_line[i] = "\n"
+                            elif re.match(' trust upstream [\S]+\n',list_line[i]):
+                                dict_ifl[temp_ifl_name].trust_upstream = True
+                                list_line[i] = '\n'
                             elif re.match(' trust 8021p\n',list_line[i]):
                                 dict_ifl[temp_ifl_name].p1 = True
                                 list_line[i]='\n'
@@ -1329,6 +1391,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 dict_ifl[temp_ifl_name].Intf_metric= int(re.match(' isis cost (.*)\n',
                                                                          list_line[i]).groups()[0])
                                 list_line[i] = '\n'
+                            elif re.match(' isis authentication-mode md5 cipher [\S]+\n',list_line[i]):
+                                dict_ifl[temp_ifl_name].isis_authen = True
+                                list_line[i]='\n'
                             elif re.match(' pim sm\n',list_line[i]):
                                 dict_ifl[temp_ifl_name].PIM= True
                                 list_line[i] = '\n'
@@ -1369,22 +1434,51 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 temp_search = re.match(' vrrp vrid ([\d]*) virtual-ip ((?:[\d]{1,3}[\.]){3,3}[\d]{1,3})\n',
                                           list_line[i]).groups()
                                 dict_ifl[temp_ifl_name].vrrp= True
-                                dict_ifl[temp_ifl_name].vrrp_group = temp_search[0]
+                                if dict_ifl[temp_ifl_name].vrrp_group =='':
+                                    dict_ifl[temp_ifl_name].vrrp_group = temp_search[0]
+                                    #dict_ifl[temp_ifl_name].vrrp_prio = temp_search[0] + '_100'
+                                else:
+                                    if temp_search[0] not in dict_ifl[temp_ifl_name].vrrp_group:
+                                        dict_ifl[temp_ifl_name].vrrp_group = dict_ifl[temp_ifl_name].vrrp_group +\
+                                                                         '/' + temp_search[0]
+
                                 if dict_ifl[temp_ifl_name].vrrp_vip == '':
-                                    dict_ifl[temp_ifl_name].vrrp_vip = temp_search[1]
+                                    dict_ifl[temp_ifl_name].vrrp_vip = temp_search[0] + '_' + temp_search[1]
                                 else:
                                     dict_ifl[temp_ifl_name].vrrp_vip = dict_ifl[temp_ifl_name].vrrp_vip + '/' + \
-                                                                       temp_search[1]
-                                dict_ifl[temp_ifl_name].vrrp_prio= 100
+                                                                       temp_search[0] + '_' + temp_search[1]
+
                                 list_line[i] = '\n'
                             elif re.match(' vrrp vrid ([\d]*) priority ([\d]*)\n',list_line[i]):
-                                dict_ifl[temp_ifl_name].vrrp_prio = re.match(' vrrp vrid ([\d]*) priority ([\d]*)\n',
-                                                                             list_line[i]).groups()[1]
+                                temp_search = re.match(' vrrp vrid ([\d]*) priority ([\d]*)\n',list_line[i]).groups()
+                                if dict_ifl[temp_ifl_name].vrrp_prio=='':
+                                    dict_ifl[temp_ifl_name].vrrp_prio = temp_search[0]+'_'+temp_search[1]
+                                else:
+                                    dict_ifl[temp_ifl_name].vrrp_prio = dict_ifl[temp_ifl_name].vrrp_prio + '/' +\
+                                            temp_search[0] + '_' + temp_search[1]
                                 list_line[i] = '\n'
                             elif re.match(' vrrp vrid ([\d]*) preempt-mode timer delay ([\d]*)\n',list_line[i]):
-                                dict_ifl[temp_ifl_name].vrrp_delay = int(re.match(' vrrp vrid ([\d]*)'
-                                                                                  ' preempt-mode timer delay ([\d]*)\n',
-                                                                                  list_line[i]).groups()[1])
+                                temp_search=re.match(' vrrp vrid ([\d]*) preempt-mode timer delay ([\d]*)\n',
+                                                                                  list_line[i]).groups()
+                                if dict_ifl[temp_ifl_name].vrrp_delay =='':
+                                    dict_ifl[temp_ifl_name].vrrp_delay = temp_search[0] + '_' + temp_search[1]
+                                else:
+                                    dict_ifl[temp_ifl_name].vrrp_delay = dict_ifl[temp_ifl_name].vrrp_delay + '/' +\
+                                                                         temp_search[0] + '_' + temp_search[1]
+                                list_line[i] = '\n'
+                            elif re.match(' vrrp vrid ([\d]*) track interface ([\S]+) reduced ([\d]+)\n',list_line[i]):
+                                temp_search = re.match(' vrrp vrid ([\d]*) track interface ([\S]+) reduced ([\d]+)\n',
+                                                       list_line[i]).groups()
+                                if dict_ifl[temp_ifl_name].vrrp_track =='':
+                                    dict_ifl[temp_ifl_name].vrrp_track = temp_search[0] + '_' + temp_search[1]
+                                else:
+                                    dict_ifl[temp_ifl_name].vrrp_track = dict_ifl[temp_ifl_name].vrrp_track + '/' +\
+                                                                         temp_search[0] + '_' + temp_search[1]
+                                if dict_ifl[temp_ifl_name].vrrp_reduce == '':
+                                    dict_ifl[temp_ifl_name].vrrp_reduce = temp_search[0] + '_' +temp_search[2]
+                                else:
+                                    dict_ifl[temp_ifl_name].vrrp_reduce = dict_ifl[temp_ifl_name].vrrp_reduce +\
+                                                                          +'/' + temp_search[0] + '_' + temp_search[2]
                                 list_line[i] = '\n'
                             elif re.match(' loop-detect enable\n',list_line[i]):
                                 if (len(temp_vlan_list)>0)and((temp_ifd_name+'.0')==temp_ifl_name):
@@ -1432,9 +1526,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 temp_lsp.Backup_path = temp_search[0]
                             else:
                                 temp_lsp.Path = temp_search[0]
-                        elif re.match(' mpls te backup ordinary best-effort\n',list_line[i]):
+                        elif re.match(' mpls te backup ordinary best-effort[\s]?\n',list_line[i]):
                             temp_lsp.Bk_path_org=True
-                        elif re.match(' mpls te backup hot-standby mode revertive wtr [\d]+\n',list_line[i]):
+                        elif re.match(' mpls te backup hot-standby mode revertive wtr [\d]+[\s]?\n',list_line[i]):
                             temp_lsp.Bk_host_stb = True
                         elif list_line[i].strip() == "shutdown":
                             temp_lsp.Admin_status = False
@@ -1480,9 +1574,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
 
             i =0
             while i<total_lines:
-                if re.match('bfd ([\S]*) bind peer-ip ([\S]*)( vpn-instance ([\S]*))? interface ([\S]*)'
+                if re.match('bfd ([\S]*) bind peer-ip ([\S]*)(?: vpn-instance ([\S]*))? interface ([\S]*)'
                             '(?: source-ip ([\S]*))?(?: auto)?\n',list_line[i]):
-                    temp_search = re.match('bfd ([\S]*) bind peer-ip ([\S]*)( vpn-instance ([\S]*))? interface ([\S]*)'
+                    temp_search = re.match('bfd ([\S]*) bind peer-ip ([\S]*)(?: vpn-instance ([\S]*))? interface ([\S]*)'
                             '(?: source-ip ([\S]*))?(?: auto)?\n',list_line[i]).groups()
                     temp_bfd = BFD()
                     temp_bfd.Name = temp_search[0]
@@ -1520,9 +1614,19 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 dict_policy_map[key].insert(cursor)
             print 'Data IFD:processing'
             for key in list_ifd:
-                if (key!='LoopBack')and(key!='Vlanif')and((key + '.0') not in dict_ifl):
-                    list_ifd[key].Flex_service = True
-                    list_ifd[key].Flex_vlan_tag = True
+                if (key!='LoopBack')and(key!='Vlanif'):
+                    dict_ifl_filter = {k:v for k,v in dict_ifl.iteritems() if key + '.' in k}
+                    if len(dict_ifl_filter)>1:
+                        #print 'Gia tri len > 1 :',dict_ifl_filter
+                        list_ifd[key].Flex_service = True
+                        list_ifd[key].Flex_vlan_tag = True
+                    elif len(dict_ifl_filter) == 1:
+                        #print 'Gia tri =1', key, dict_ifl_filter
+                        if (key + '.0' not in dict_ifl_filter) :
+                            #print 'Gia tri ko co .0:',dict_ifl_filter
+                            list_ifd[key].Flex_service = True
+                            list_ifd[key].Flex_vlan_tag = True
+                #list_ifd[key].showdata()
                 list_ifd[key].insert(cursor)
 
             print 'Data l2vpn:processing'
@@ -1550,6 +1654,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                         temp_ifl.Unit = dict_ifl[key].Unit
                         temp_ifl.Unit1 = dict_ifl[key].Unit
                         temp_ifl.VRF_Name = dict_ifl[key].VRF_Name
+                        temp_ifl.df_classifier = dict_ifl[key].df_classifier
 
                         if dict_ifl[key].IP!='':
                             temp_network = dict_ifl[key].IP.split()[0]+'/'+dict_ifl[key].IP.split()[1]
@@ -1576,6 +1681,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 dict_ifl[key1].IP_helper = dict_ifl[key].IP_helper
                                 dict_ifl[key1].Service='L3VPN'
                                 dict_ifl[key1].BD_ID=''
+                                dict_ifl[key1].df_classifier = dict_ifl[key].df_classifier
                                 if dict_ifl[key].IP!='':
                                     dict_ifl[key1].dhcp_gw=dict_ifl[key].IP.split()[0]
                                 #dict_ifl[key1].MTU = dict_ifl[key].MTU

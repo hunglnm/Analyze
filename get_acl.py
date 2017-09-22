@@ -312,7 +312,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                 if re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]):
                     temp_search = re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]).groups()
                     if temp_search[0] is not None:
-                        temp_acl_name = temp_search[0]+'_'+temp_search[1]
+                        temp_acl_name = temp_search[0]
                     else:
                         temp_acl_name = temp_search[1]
                     temp_acl = ACL()
@@ -330,44 +330,8 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                             temp_acl_detail.Name = temp_acl_name
                             temp_acl_detail.Index_1 = temp_search[0]
                             temp_acl_detail.Action_1 = temp_search[1]
-                            dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
-                            list_line[i] = '\n'
-                        elif re.match(' rule ([\d]+) (deny|permit)(?: vpn-instance ([\S]+))?(?: fragment-type ([\S]+))?'
-                                    ' source ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
-                                    '|any)\n',list_line[i]):
-                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: vpn-instance ([\S]+))?(?: fragment-type ([\S]+))?'
-                                    '(?: source ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
-                                    '|any))\n',list_line[i]).groups()
-                            temp_acl_detail = ACL_detail()
-                            temp_acl_detail.Name = temp_acl_name
-                            temp_acl_detail.Index_1 = temp_search[0]
-                            temp_acl_detail.Action_1 = temp_search[1]
-                            if temp_search[4] is not None:
-                                temp_acl_detail.Prefix_Source = temp_search[4]
-                            else:
-                                temp_acl_detail.Prefix_Source = 'any'
-                            if temp_search[2] is not None:
-                                temp_acl_detail.VRF_Name = temp_search[2]
-                            if temp_search[3] is not None:
-                                print 'Chua tao attribute Fragment'
-                            dict_acl_detail[temp_acl_detail.Name+'/'+temp_acl_detail.Index_1] = temp_acl_detail
-                            list_line[i] = '\n'
-                        elif re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
-                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
-                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?\n',list_line[i]):
-                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}'
-                                                   '\-){2,2}[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}'
-                                                   '[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}'
-                                                   '[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?\n',
-                                                   list_line[i]).groups()
-                            temp_acl_detail = ACL_detail()
-                            temp_acl_detail.Name = temp_acl_name
-                            temp_acl_detail.Index_1 = temp_search[0]
-                            temp_acl_detail.Action_1 = temp_search[1]
-                            if temp_search[2] is not None:
-                                temp_acl_detail.Prefix_Source = temp_search[2]
-                            if temp_search[3] is not None:
-                                temp_acl_detail.Prefix_Dest = temp_search[3]
+                            #print 'DK0:'
+                            #temp_acl_detail.showdata()
                             dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
                             list_line[i] = '\n'
                         elif re.match(' rule ([\d]+) (deny|permit)(?: (tcp|udp|ip))(?: vpn-instance ([\S]+))?'
@@ -377,7 +341,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                       '|any))?(?: source-port ((?:eq|gt|lt|neq|range) [\S]+))?'
                                       '(?: destination ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
                                       ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?'
-                                      '(?: destination-port ((?:eq|gt|lt|neq|range) [\S]+))?\n',
+                                      '(?: destination-port ((?:eq|gt|lt|neq|range) [\S]+))?[\s]*\n',
                                       list_line[i]):
                             temp_search = re.match(' rule ([\d]+) (deny|permit)(?: (tcp|udp|ip))(?: vpn-instance ([\S]+))?'
                                                    '(?: fragment-type ([\S]+))?'
@@ -386,7 +350,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                                    '|any))?(?: source-port ((?:eq|gt|lt|neq|range) [\S]+))?'
                                                    '(?: destination ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
                                                    ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?'
-                                                   '(?: destination-port ((?:eq|gt|lt|neq|range) [\S]+))?\n',
+                                                   '(?: destination-port ((?:eq|gt|lt|neq|range) [\S]+))?[\s]*\n',
                                                    list_line[i]).groups()
                             temp_acl_detail = ACL_detail()
                             temp_acl_detail.Name = temp_acl_name
@@ -405,6 +369,8 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                 temp_acl_detail.Prefix_Dest = temp_search[7]
                             if temp_search[8] is not None:
                                 temp_acl_detail.D_Port = temp_search[8]
+                            #print 'DK3:'
+                            #temp_acl_detail.showdata()
                             dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
                             list_line[i] = '\n'
                         elif re.match(' rule ([\d]+) (deny|permit)(?: (icmp))(?: vpn-instance ([\S]+))?'
@@ -412,14 +378,14 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                       '(?: source(?: ip-address)? ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
                                       ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?'
                                       '(?: destination ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
-                                      ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?(?: icmp-type ([\S]+))?\n',
+                                      ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?(?: icmp-type ([\S]+))?[\s]*\n',
                                       list_line[i]):
                             temp_search = re.match(' rule ([\d]+) (deny|permit)(?: (icmp))(?: vpn-instance ([\S]+))?'
                                                    '(?: fragment-type ([\S]+))?'
                                                    '(?: source(?: ip-address)? ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
                                                    ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?'
                                                    '(?: destination ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
-                                                   ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?(?: icmp-type ([\S]+))?\n',
+                                                   ' (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})|any))?(?: icmp-type ([\S]+))?[\s]*\n',
                                                    list_line[i]).groups()
                             temp_acl_detail = ACL_detail()
                             temp_acl_detail.Name = temp_acl_name
@@ -438,11 +404,54 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                 temp_acl_detail.Option_1 = temp_search[7]
                             dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
                             list_line[i] = '\n'
+                        elif re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
+                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
+                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?[\s]*\n',list_line[i]):
+                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}'
+                                                   '\-){2,2}[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}'
+                                                   '[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}'
+                                                   '[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?[\s]*\n',
+                                                   list_line[i]).groups()
+                            temp_acl_detail = ACL_detail()
+                            temp_acl_detail.Name = temp_acl_name
+                            temp_acl_detail.Index_1 = temp_search[0]
+                            temp_acl_detail.Action_1 = temp_search[1]
+                            if temp_search[2] is not None:
+                                temp_acl_detail.Prefix_Source = temp_search[2]
+                            if temp_search[3] is not None:
+                                temp_acl_detail.Prefix_Dest = temp_search[3]
+                            #print 'DK2:'
+                            #temp_acl_detail.showdata()
+                            dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
+                            list_line[i] = '\n'
+                        elif re.match(' rule ([\d]+) (deny|permit)(?: vpn-instance ([\S]+))?(?: fragment-type ([\S]+))?'
+                                    ' source ((?:(?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
+                                    ')|any)[\s]*\n',list_line[i]):
+                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: vpn-instance ([\S]+))?(?: fragment-type ([\S]+))?'
+                                    '(?: source ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) (?:0|(?:[\d]{1,3}[\.]){3}[\d]{1,3})'
+                                    ')|any)[\s]*\n',list_line[i]).groups()
+
+                            temp_acl_detail = ACL_detail()
+                            temp_acl_detail.Name = temp_acl_name
+                            temp_acl_detail.Index_1 = temp_search[0]
+                            temp_acl_detail.Action_1 = temp_search[1]
+                            if temp_search[4] is not None:
+                                temp_acl_detail.Prefix_Source = temp_search[4]
+                            else:
+                                temp_acl_detail.Prefix_Source = 'any'
+                            if temp_search[2] is not None:
+                                temp_acl_detail.VRF_Name = temp_search[2]
+                            if temp_search[3] is not None:
+                                print 'Chua tao attribute Fragment'
+                            #print 'DK1:'
+                            #temp_acl_detail.showdata()
+                            dict_acl_detail[temp_acl_detail.Name+'/'+temp_acl_detail.Index_1] = temp_acl_detail
+                            list_line[i] = '\n'
                         i += 1
                     i -= 1
-                elif re.match(' ip ip-prefix ([\S]+) index ([\d]+) permit ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})) [\d]+'
+                elif re.match('[\s]?ip ip-prefix ([\S]+) index ([\d]+) permit ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3})) [\d]+'
                               '(?: greater-equal ([\d]+) less-equal ([\d]+))?\n',list_line[i]):
-                    temp_search = re.match(' ip ip-prefix ([\S]+) index ([\d]+) permit ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) [\d]+)'
+                    temp_search = re.match('[\s]?ip ip-prefix ([\S]+) index ([\d]+) permit ((?:(?:[\d]{1,3}[\.]){3}[\d]{1,3}) [\d]+)'
                               '(?: greater-equal ([\d]+) less-equal ([\d]+))?\n',list_line[i]).groups()
                     #print temp_search
                     temp_acl_name = temp_search[0]

@@ -1,6 +1,4 @@
 from classmap import Classmap
-from mysql.connector import MySQLConnection,Error
-import mysql.connector
 import MySQLdb
 import os
 import re
@@ -129,7 +127,6 @@ def get_classmap_from_log(list_line, hostname, Dev, total_lines, log_path, conn,
                                     temp_classmap.DSCP = list_line[i].strip().split()[-1]
                                 else:
                                     temp_classmap.DSCP = temp_classmap.DSCP + ' ' + list_line[i].strip().split()[-1]
-                            list_line[i] = '\n'
                         i += 1
                     list_class[temp_classmap.Name] = temp_classmap
                     i -= 1

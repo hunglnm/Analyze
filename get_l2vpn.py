@@ -274,7 +274,7 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
             VSI.Hostname = hostname
             while i < total_lines:
                 if re.match('vsi ([\S]*)(?: ([\S]*))?\n',list_line[i]):
-                    print i,list_line[i]
+                    #print i,list_line[i]
                     temp_vsi = VSI()
                     temp_search = re.match('vsi ([\S]*)(?: ([\S]*))?\n',list_line[i]).groups()
                     temp_vsi.name = temp_search[0]
@@ -356,7 +356,7 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                             temp_vsi.Admin_status = False
                             list_line[i] = '\n'
                         i += 1
-                    temp_vsi.showdata()
+                    #temp_vsi.showdata()
                     list_l2vpn[temp_vsi.name]=temp_vsi
                     i -= 1
                 i += 1
