@@ -112,9 +112,10 @@ def get_server_from_log(list_line,hostname,Dev,total_lines,log_path, conn, curso
                     temp_search=re.match('[\s]?ntp-service access query ([\S]*)\n',list_line[i]).groups()
                     temp_ntp_acl = temp_search[0]
                     list_line[i] = '\n'
-                elif re.match('[\s]?snmp-agent target-host trap  address udp-domain '
+                elif re.match('[\s]?snmp-agent target-host trap [\s]?address udp-domain '
                               '((?:[\d]{1,3}[\.]){3}[\d]{1,3}) .*\n',list_line[i]):
-                    temp_search = re.match('[\s]?snmp-agent target-host trap  address udp-domain '
+
+                    temp_search = re.match('[\s]?snmp-agent target-host trap [\s]?address udp-domain '
                               '((?:[\d]{1,3}[\.]){3}[\d]{1,3}) .*\n',list_line[i]).groups()
                     temp_server = Server()
                     temp_server.IP = temp_search[0]
