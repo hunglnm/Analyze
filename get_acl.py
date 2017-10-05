@@ -457,8 +457,8 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                     temp_acl_name = temp_search[0]
                     temp_acl = ACL()
                     temp_acl.Name = temp_acl_name
-                    if temp_acl.Name not in list_acl:
-                        list_acl[temp_acl.Name]=temp_acl
+                    if temp_acl.Name not in dict_acl:
+                        dict_acl[temp_acl.Name]=temp_acl
                     temp_acl_detail = ACL_detail()
                     temp_acl_detail.Name = temp_search[0]
                     temp_acl_detail.Index_1 = temp_search[1]
@@ -466,7 +466,8 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                         temp_acl_detail.Prefix_Source = temp_search[2] + ' ' + temp_search[3] + '-' + temp_search[4]
                     else:
                         temp_acl_detail.Prefix_Source = temp_search[2]
-                    list_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
+                    dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
+                    #temp_acl_detail.showdata()
                     list_line[i]='\n'
                 i += 1
             i=0
