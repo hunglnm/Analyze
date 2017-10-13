@@ -989,6 +989,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                             temp_ifl.Unit1 = dict_ifd[temp_ifl.IFD]
                                             dict_ifd[temp_ifl.IFD] += 1
                                         else:
+                                            if temp_ifl.IFD + '.' + str(temp_ifl.Unit) in dict_ifl:
+                                                temp_ifl.Unit = dict_ifd[temp_ifl.IFD]
+                                                dict_ifd[temp_ifl.IFD] += 1
                                             temp_ifl.Unit1 = temp_ifl.Unit
                                     temp_ifl_name = temp_ifl.IFD + '.' + str(temp_ifl.Unit)
                                     dict_ifl[temp_ifl_name] = temp_ifl
