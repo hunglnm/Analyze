@@ -312,9 +312,9 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                 if re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]):
                     temp_search = re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]).groups()
                     if temp_search[0] is not None:
-                        temp_acl_name = temp_search[0]
+                        temp_acl_name = temp_search[0].strip()
                     else:
-                        temp_acl_name = temp_search[1]
+                        temp_acl_name = temp_search[1].strip()
                     temp_acl = ACL()
                     temp_acl.Name = temp_acl_name
                     if re.match('^ description (.*)\n',list_line[i+1]):
@@ -473,11 +473,16 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
             i=0
             while i< total_lines:
                 if re.match('user-interface vty .*\n',list_line[i]):
+                    #print list_line[i]
                     i += 1
+                    #print 'Dong ke tiep:',list_line[i]
                     while re.match(' ',list_line[i]) is not None:
                         if re.match(' acl ([\S]+) inbound\n',list_line[i]):
+                            #print 'Kiem acl MGMT',list_line[i]
                             temp_search = re.match(' acl ([\S]+) inbound\n',list_line[i]).groups()
+                            #print 'Ket qua search:',temp_search[0]
                             if temp_search[0] in dict_acl:
+                                #print 'Match acl trong dict_acl'
                                 dict_acl[temp_search[0]].Purpose='MGMT'
                             list_line[i]='\n'
                         i += 1
