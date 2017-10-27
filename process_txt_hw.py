@@ -6,8 +6,10 @@ def func_find():
     s_path = raw_input('Nhap duong dan :')
     s_pattern = raw_input('Nhap regex can tim:')
     f_log = open(s_path + '/result_search.log', 'w')
+
     for path, subdirs, files in os.walk(s_path):
         for name in files:
+            print name
             if 'result_search.log' not in name:
                 path_file = os.path.join(path, name)
                 f_log.write(path_file + '\n')
@@ -20,7 +22,7 @@ def func_find():
                     f_log.write(every_part)
                     #print every_part
                     i += 1
-            f_log.write('Result - Total lines: %s\n' % i)
+                f_log.write('Result - Total lines: %s\n' % i)
     f_log.close()
 
 

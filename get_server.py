@@ -106,6 +106,8 @@ def get_server_from_log(list_line,hostname,Dev,total_lines,log_path, conn, curso
                     temp_server.Purpose = "NTP"
                     temp_server.Source = temp_search[1]
                     temp_server.ACL = temp_ntp_acl
+                    if temp_search[2] is not None:
+                        temp_server.pref = True
                     list_server['NTP/'+temp_server.IP] = temp_server
                     list_line[i] = '\n'
                 elif re.match('[\s]?ntp-service access query ([\S]*)\n',list_line[i]):
