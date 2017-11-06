@@ -1566,10 +1566,16 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                             print hostname,'Chua khai bao ifl:',temp_ifl1,temp_ifl2
                     else:
                         if (temp_ifl1 in dict_ifl)and(temp_ifl2 in dict_ifl):
-                            dict_ifl[temp_ifl1].Service='ccc'
+                            if re.match('.*\.0$',temp_ifl1):
+                                dict_ifl[temp_ifl1].Service='ccc'
+                            else:
+                                dict_ifl[temp_ifl1].Service = 'ccc-tag'
                             dict_ifl[temp_ifl1].CCC_Intf = temp_ifl2
                             dict_ifl[temp_ifl1].CCC_Name = temp_search[0]
-                            dict_ifl[temp_ifl2].Service = 'ccc'
+                            if re.match('.*\.0$', temp_ifl2):
+                                dict_ifl[temp_ifl2].Service = 'ccc'
+                            else:
+                                dict_ifl[temp_ifl2].Service = 'ccc-tag'
                             dict_ifl[temp_ifl2].CCC_Intf = temp_ifl1
                             dict_ifl[temp_ifl2].CCC_Name = temp_search[0]
                         else:
@@ -1621,6 +1627,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
             for key in list_ifd:
                 if (key!='LoopBack')and(key!='Vlanif'):
                     dict_ifl_filter = {k:v for k,v in dict_ifl.iteritems() if key + '.' in k}
+                    #print key,dict_ifl_filter
                     if len(dict_ifl_filter)>1:
                         #print 'Gia tri len > 1 :',dict_ifl_filter
                         list_ifd[key].Flex_service = True
