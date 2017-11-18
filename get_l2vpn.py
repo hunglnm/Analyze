@@ -351,7 +351,12 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                                     temp_l2vpn.UPE_bk = True
                                 list_line[i+1] = '\n'
                                 i +=1
-                            list_peer[temp_l2vpn.Peer+'/'+str(temp_l2vpn.VC_ID)]=temp_l2vpn
+                            if temp_l2vpn.Peer+'/'+str(temp_l2vpn.VC_ID) in list_peer:
+                                if list_peer[temp_l2vpn.Peer+'/'+str(temp_l2vpn.VC_ID)].UPE:
+                                    temp_l2vpn.UPE = True
+                                if list_peer[temp_l2vpn.Peer + '/' + str(temp_l2vpn.VC_ID)].UPE_bk:
+                                    temp_l2vpn.UPE_bk = True
+                            list_peer[temp_l2vpn.Peer + '/' + str(temp_l2vpn.VC_ID)] = temp_l2vpn
                         elif re.match(' shutdown\n',list_line[i]):
                             temp_vsi.Admin_status = False
                             list_line[i] = '\n'
