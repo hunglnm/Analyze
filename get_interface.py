@@ -1400,6 +1400,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                                                        + '/' + temp_search[2]
                                     list_line[i]='\n'
                                 elif re.match(' isis cost (.*)\n',list_line[i]):
+                                    print(list_line[i])
                                     dict_ifl[temp_ifl_name].Intf_metric= int(re.match(' isis cost (.*)\n',
                                                                              list_line[i]).groups()[0])
                                     list_line[i] = '\n'

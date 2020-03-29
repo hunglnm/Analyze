@@ -727,6 +727,9 @@ def main():
         cursor = conn.cursor()
         # Information of file
         s_path = input("Enter the path:")
+        if not os.path.isdir(s_path):
+            print("This directory is not existed:", s_path, "Please check again")
+            
         if os.path.isfile(s_path + "selected_files.txt"):
             os.remove(s_path + "selected_files.txt")
         sel_index = menu_1()
