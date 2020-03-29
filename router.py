@@ -51,20 +51,20 @@ class Router:
 
     def getdata(self, result_query):
         for row in result_query:
-            print row  # Xu ly truoc khi print
+            print(row)  # Xu ly truoc khi print
 
     def showdata(self):
-        print  "Hostname:", self.Hostname
-        print  "Device:", self.Device
-        print  "RID:",self.RID
-        print  "Timezone:", self.Timezone
-        print  "SNMP community:", self.SNMP_Comm
-        print  "SNMP Trap:", self.SNMP_Trap
-        print  "Login:", self.Login
-        print  "L2 Age time:", self.L2_age_time
-        print  "Multicast:", self.Multicast
-        print  "IGMP SSM:", self.IGMP_SSM
-        print  "PIM:", self.PIM
-        print  "TE:", self.TE
-        print  "LDP:", self.LDP
-        print  "LDP Session Protect:", self.LDP_Session_Protect
+        print("Hostname:", self.Hostname)
+        print("Device:", self.Device)
+        print("RID:",self.RID)
+        print("Timezone:", self.Timezone)
+        print("SNMP community:", self.SNMP_Comm)
+        print("SNMP Trap:", self.SNMP_Trap)
+        print("Login:", self.Login)
+        print("L2 Age time:", self.L2_age_time)
+        print("Multicast:", self.Multicast)
+        print("IGMP SSM:", self.IGMP_SSM)
+        print("PIM:", self.PIM)
+        print("TE:", self.TE)
+        print("LDP:", self.LDP)
+        print("LDP Session Protect:", self.LDP_Session_Protect)

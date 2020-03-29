@@ -17,7 +17,7 @@ class BFD:
 
     def showdata(self):
         attrs = vars(self)
-        print BFD.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(BFD.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_bfd = ("INSERT INTO BFD "

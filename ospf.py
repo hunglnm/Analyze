@@ -10,14 +10,14 @@ class OSPF:
         self.Authen=""
         self.Admin_Status=""
     def showdata(self):
-        print self.Name
-        print self.Hostname
-        print self.VRF_Name
-        print self.Ref_BW
-        print self.Redistribute
-        print  self.DF
-        print self.Authen
-        print self.Admin_Status
+        print(self.Name)
+        print(self.Hostname)
+        print(self.VRF_Name)
+        print(self.Ref_BW)
+        print(self.Redistribute)
+        print(self.DF)
+        print(self.Authen)
+        print(self.Admin_Status)
 
     def insert(self, cursor):
         add_ospf = ("INSERT INTO OSPF "

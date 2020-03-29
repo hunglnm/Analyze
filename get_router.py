@@ -1,5 +1,5 @@
 from router import Router
-import MySQLdb
+import pymysql
 import re
 import os
 
@@ -25,7 +25,7 @@ def get_hostname_from_txt(list_line, total_lines):
         elif "ASR9" in hostname:
             dev_type = "ASR9k"
         else:
-            print "Script not support for this device "
+            print("Script not support for this device ")
     host_dev.append(hostname)
     host_dev.append(dev_type)
     return host_dev
@@ -170,12 +170,12 @@ def get_router_from_txt(list_line, hostname, Dev, total_lines, log_path, conn, c
             f.write(list_line[i])
             i += 1
     else:
-        print "Device is not support in this script"
+        print("Device is not support in this script")
         # Connect and update database
     try:
         temp_router.insert(cursor)
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

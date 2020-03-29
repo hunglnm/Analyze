@@ -22,7 +22,7 @@ class SLA:
 
     def showdata(self):
         attrs = vars(self)
-        print SLA.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(SLA.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_sla = ("INSERT INTO SLA "

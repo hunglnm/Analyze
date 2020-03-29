@@ -18,10 +18,10 @@ class DHCP:
         cursor.execute(add_dhcp, data_dhcp)
 
     def showdata(self):
-        print  "Hostname:", self.Hostname
-        print  "Name:", self.Name
-        print "VRF:",self.VRF_Name
-        print "NW:",self.NW
-        print "GW:",self.GW
-        print "DNS:",self.DNS
-        print "Exclude:",self.Exclude
+        print("Hostname:", self.Hostname)
+        print("Name:", self.Name)
+        print("VRF:",self.VRF_Name)
+        print("NW:",self.NW)
+        print("GW:",self.GW)
+        print("DNS:",self.DNS)
+        print("Exclude:",self.Exclude)

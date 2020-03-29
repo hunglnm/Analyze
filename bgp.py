@@ -24,7 +24,7 @@ class BGP:
 
     def showdata(self):
         attrs = vars(self)
-        print BGP.Hostname,',',BGP.BGP_log_change,',',','.join("%s: %s" % item for item in attrs.items())
+        print(BGP.Hostname,',',BGP.BGP_log_change,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_bgp = ("INSERT INTO BGP "

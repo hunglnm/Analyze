@@ -24,7 +24,7 @@ class IFD:
 
     def showdata(self):
         attrs = vars(self)
-        print IFD.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(IFD.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_ifd = ("INSERT INTO IFD "

@@ -1,6 +1,6 @@
 from vrf_ie import VRF_IE
 from vrf import VRF
-import MySQLdb
+import pymysql
 import os
 import re
 
@@ -201,9 +201,9 @@ def get_vrf_from_log(list_line, hostname, Dev, total_lines, log_path, f_file,con
 
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
         for key in dict_vrf_ie:
             dict_vrf_ie[key].showdata()

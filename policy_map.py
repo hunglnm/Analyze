@@ -34,7 +34,7 @@ class Policy_map:
 
     def showdata(self):
         attrs = vars(self)
-        print Policy_map.Hostname, ',', ','.join("%s: %s" % item for item in attrs.items())
+        print(Policy_map.Hostname, ',', ','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_policy_map = ("INSERT INTO Policy_map "

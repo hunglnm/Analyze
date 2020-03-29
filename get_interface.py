@@ -7,7 +7,7 @@ from vrf import VRF
 from static_route import Static_Route
 from netaddr import *
 from policy_map import Policy_map
-import MySQLdb
+import pymysql
 import os
 import re
 from policy_map import Policy_map
@@ -236,7 +236,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                             list_line[j + 1] = "\n"
                                     j +=1
                                 tmp_key = temp_ifl.IFD + '.' + str(temp_ifl.Unit)
-                                if tmp_key in dict_ifl.keys():
+                                if tmp_key in list(dict_ifl.keys()):
                                     temp_ifl.Unit += 100000
                                     temp_ifl.Unit1 = dict_ifd[temp_ifd_name]
                                     dict_ifd[temp_ifd_name] += 1
@@ -357,7 +357,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 j += 1
                             if temp_ifl.IFD!="" and temp_ifl.Service!="":
                                 tmp_key = temp_ifl.IFD + '.' + str(temp_ifl.Unit)
-                                if tmp_key in dict_ifl.keys():
+                                if tmp_key in list(dict_ifl.keys()):
                                     temp_ifl.Unit += 100000
                                     temp_ifl.Unit1 = dict_ifd[temp_ifl.IFD]
                                     dict_ifd[temp_ifl.IFD] += 1
@@ -471,7 +471,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                             temp_ifl.SVLAN = 1
                             temp_ifl.Service='NA'
                             tmp_key = temp_ifl.IFD + '.' + str(temp_ifl.Unit)
-                            if tmp_key in dict_ifl.keys():
+                            if tmp_key in list(dict_ifl.keys()):
                                 temp_ifl.Unit += 100000
                                 temp_ifl.Unit1 = dict_ifd[temp_ifd_name]
                                 dict_ifd[temp_ifd_name] += 1
@@ -669,10 +669,10 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     dict_ifl[temp_ifl_name].Split_horizon = True
                                 list_line[i] = '\n'
                             else:
-                                print hostname, temp_ifl_name
+                                print(hostname, temp_ifl_name)
                         i += 1
                 i += 1
-            print 'Bat dau check ISIS'
+            print('Bat dau check ISIS')
             i = 0
             while i < total_lines:
                 if re.match('^router isis .*\n', list_line[i]):
@@ -707,7 +707,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     break
                 i +=1
             i = 0
-            print 'Bat dau check RSVP'
+            print('Bat dau check RSVP')
             while i < total_lines:
                 if re.match('rsvp', list_line[i]):
                     while list_line[i] != '!\n':
@@ -730,7 +730,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     break
                 i += 1
             tmp_ifl_name = ''
-            print 'Bat dau check MPLS'
+            print('Bat dau check MPLS')
             i = 0
             while i < total_lines:
                 if re.match('^mpls traffic-eng\n', list_line[i]):
@@ -755,7 +755,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                         i += 1
                     break
                 i += 1
-            print 'Bat dau check LDP'
+            print('Bat dau check LDP')
             i= 0
             while i < total_lines:
                 if re.match('^mpls ldp\n', list_line[i]):
@@ -770,7 +770,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                         i += 1
                     break
                 i += 1
-            print 'Bat dau check pim'
+            print('Bat dau check pim')
             i=0
             while i < total_lines:
                 if re.match('^router pim\n', list_line[i]):
@@ -795,7 +795,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 i += 1
             dict_lsp = {}
             i = 0
-            print 'Bat dau check LSP'
+            print('Bat dau check LSP')
             while i < total_lines:
                 if re.match('interface tunnel-.*\n', list_line[i]):
                     temp_lsp = LSP()
@@ -882,7 +882,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                   "where Hostname = '%s' and ( ACL='' or ACL='any') and CIR > 0 group by Name" % hostname
             cursor.execute(sql)
             list_rows = cursor.fetchall()
-            list_policer = list(map(lambda x:x[0],list_rows))
+            list_policer = list([x[0] for x in list_rows])
             dict_ifl = {} #chua ifl information
             dict_policy_map = {} #chua policy map tren interface truc tiep
             dict_l2vpn = {} #chua l2
@@ -950,6 +950,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
             while i < total_lines:
                 if re.match('interface ((?:Eth-Trunk|GigabitEthernet|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
                             list_line[i]):
+                    print(list_line[i])
                     if list_line[i+1]!='#\n':
                         tmp_result = re.match('interface ((?:Eth-Trunk|GigabitEthernet|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
                                 list_line[i])
@@ -1128,6 +1129,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 elif re.match(' traffic-policy ([\S]*) (inbound|outbound) vlan (.*)\n',list_line[i]):
                                     temp_search =re.match(' traffic-policy ([\S]*) (inbound|outbound) vlan (.*)\n',
                                                           list_line[i]).groups()
+                                    #print(list_line[i])
                                     temp_vlan_list = []
                                     if ' to ' in temp_search[2]:
                                         temp_list = temp_search[2].split()
@@ -1149,7 +1151,12 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                             if temp_search[0] in list_policer:
                                                 dict_ifl[temp_ifd_name + '.' + item].Service_pol_in = temp_search[0]
                                             else:
-                                                dict_ifl[temp_ifd_name+'.'+ item].FF_in = temp_search[0]
+                                                #print(temp_ifd_name, item)
+                                                #print(dict_ifl[temp_ifd_name+'.'+ item])
+                                                if temp_ifd_name+'.'+ item in dict_ifl.keys():
+                                                    dict_ifl[temp_ifd_name+'.'+ item].FF_in = temp_search[0]
+                                                else:
+                                                    print("Khong co "+ item+" trong "+ temp_ifd_name, list_line[i])
                                         elif temp_search[1] == 'outbound':
                                             if temp_search[0] in list_policer:
                                                 dict_ifl[temp_ifd_name + '.' + item].Service_pol_out = temp_search[0]
@@ -1563,7 +1570,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                             dict_ifl[temp_ifl2].CCC_Intf = temp_ifl1
                             dict_ifl[temp_ifl2].CCC_Name = temp_search[0]
                         else:
-                            print hostname,'Chua khai bao ifl:',temp_ifl1,temp_ifl2
+                            print(hostname,'Chua khai bao ifl:',temp_ifl1,temp_ifl2)
                     else:
                         if (temp_ifl1 in dict_ifl)and(temp_ifl2 in dict_ifl):
                             if re.match('.*\.0$',temp_ifl1):
@@ -1579,7 +1586,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                             dict_ifl[temp_ifl2].CCC_Intf = temp_ifl1
                             dict_ifl[temp_ifl2].CCC_Name = temp_search[0]
                         else:
-                            print hostname,'Chua khai bao ifl:',temp_ifl1,temp_ifl2
+                            print(hostname,'Chua khai bao ifl:',temp_ifl1,temp_ifl2)
                     list_line[i]='\n'
                 i += 1
 
@@ -1619,14 +1626,14 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     dict_bfd[temp_bfd.Name]= temp_bfd
                     i -= 1
                 i += 1
-            print 'Data Policy:processing'
+            print('Data Policy:processing')
             for key in dict_policy_map:
                 #print key,dict_policy_map[key].showdata()
                 dict_policy_map[key].insert(cursor)
-            print 'Data IFD:processing'
+            print('Data IFD:processing')
             for key in list_ifd:
                 if (key!='LoopBack')and(key!='Vlanif'):
-                    dict_ifl_filter = {k:v for k,v in dict_ifl.iteritems() if key + '.' in k}
+                    dict_ifl_filter = {k:v for k,v in dict_ifl.items() if key + '.' in k}
                     #print key,dict_ifl_filter
                     if len(dict_ifl_filter)>1:
                         #print 'Gia tri len > 1 :',dict_ifl_filter
@@ -1641,16 +1648,16 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 #list_ifd[key].showdata()
                 list_ifd[key].insert(cursor)
 
-            print 'Data l2vpn:processing'
+            print('Data l2vpn:processing')
             for key in dict_l2vpn:
                 dict_l2vpn[key].insert(cursor)
-            print 'Data LSP:processing'
+            print('Data LSP:processing')
             for key in dict_lsp:
                 dict_lsp[key].insert(cursor)
-            print 'Data BFD:processing'
+            print('Data BFD:processing')
             for key in dict_bfd:
                 dict_bfd[key].insert(cursor)
-            print 'Data IFL:processing'
+            print('Data IFL:processing')
             for key in dict_ifl:
                 if (dict_ifl[key].Routing_type == 'isis') and (dict_ifl[key].MPLS == True) and \
                         (dict_ifl[key].RSVP == True):
@@ -1703,7 +1710,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                     else:
                         temp_vrf.insert_dhcp_relay(cursor)
                 elif (dict_ifl[key].IP_helper != ''):
-                    print 'Xay ra truong hop dhcp global'
+                    print('Xay ra truong hop dhcp global')
                     dict_ifl[key].showdata()
 
                 #if dict_ifl[key].IFD=='Loopback':
@@ -1716,9 +1723,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
 
     finally:

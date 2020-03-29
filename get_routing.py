@@ -8,7 +8,7 @@ from static_route import  Static_Route
 from ifl import IFL
 from vrf import VRF
 from vrf_ie import VRF_IE
-import MySQLdb
+import pymysql
 import os
 import re
 from route_map import Route_map
@@ -45,7 +45,7 @@ class static_process:
 
     def showdata(self):
         attrs = vars(self)
-        print ','.join("%s: %s" % item for item in attrs.items())
+        print(','.join("%s: %s" % item for item in list(attrs.items())))
 
 
 def get_static_route1(str1):
@@ -55,7 +55,7 @@ def get_static_route1(str1):
     if re.match("ip route ", str1):
         list_str=str1.split(" ")
         len_list=len(list_str)
-        print str1
+        print(str1)
         i=0
         while i < len_list :
             if list_str[i]=='vrf':
@@ -410,7 +410,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                 BGP.BGP_log_change = True
                             if " neighbor " in list_line[i]:
                                 temp_peer = list_line[i].strip().split(" ")[1].strip()
-                                if temp_peer not in list_peer.keys():
+                                if temp_peer not in list(list_peer.keys()):
                                     temp_bgp = BGP()
                                     temp_bgp.Peer = temp_peer
                                     temp_bgp.Local_AS = temp_AS
@@ -452,7 +452,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                 temp_nlri.append(s1)
                             elif "neighbor" in list_line[i]:
                                 temp_peer = list_line[i].strip().split(" ")[1].strip()
-                                if temp_peer in list_peer.keys():
+                                if temp_peer in list(list_peer.keys()):
                                     if list_peer[temp_peer].NLRI!="":
                                         list_peer[temp_peer].NLRI = list_peer[temp_peer].NLRI + " " + temp_nlri[0]
                                     else :
@@ -486,7 +486,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                 list_line[i] = "\n"
                             elif "neighbor" in list_line[i]:
                                 temp_peer = list_line[i].strip().split(" ")[1].strip()
-                                if temp_peer not in list_peer.keys():
+                                if temp_peer not in list(list_peer.keys()):
                                     temp_bgp = BGP()
                                     temp_bgp.Peer = temp_peer
                                     temp_bgp.Local_AS = temp_AS
@@ -575,7 +575,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                     temp_static.insert(cursor)
                                     list_line[i] = '\n'
                                 else:
-                                    print list_line[i]
+                                    print(list_line[i])
                                 i += 1
                         elif re.match('^ vrf (.*)\n',list_line[i]):
                             tmp_vrf_name = re.match('^ vrf (.*)\n',list_line[i]).groups()[0]
@@ -609,7 +609,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                         temp_static.insert(cursor)
                                         list_line[i] = '\n'
                                     else:
-                                        print list_line[i]
+                                        print(list_line[i])
                                     i += 1
                         i += 1
                 elif re.match('^router isis (.*)\n',list_line[i]):
@@ -669,7 +669,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                         i += 1
                     temp_isis.insert(cursor)
                 elif re.match('^router bgp (.*)\n', list_line[i]):
-                    print 'Processing BGP'
+                    print('Processing BGP')
                     temp_nlri = []
                     temp_AS = list_line[i].strip().split()[2]
                     temp_bgp_RID = ""
@@ -724,7 +724,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                     list_line[i] = '\n'
                                 elif 'route-reflector-client' in list_line[i]:
                                     temp_bgp_group.Cluster = True
-                                    print i
+                                    print(i)
                                     list_line[i] = '\n'
                                 i += 1
                             temp_bgp_group.showdata()
@@ -778,7 +778,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                         elif re.match(' vrf .*',list_line[i]):
                             temp_VRF_name = list_line[i].strip().split()[-1]
                             temp_bgp = BGP()
-                            print 'Check VRF BGP'
+                            print('Check VRF BGP')
                             while list_line[i]!=' !\n':
                                 if " redistribute " in list_line[i]:
                                     temp_redistribute = Redistribute()
@@ -917,7 +917,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                     i -= 1
                     router_isis.append(temp_isis)
                 elif re.match('^bgp ([\d]*)\n', list_line[i]):
-                    print 'Into BGP'
+                    print('Into BGP')
                     temp_local_as = re.match('^bgp ([\d]*)\n', list_line[i]).groups()[0]
                     temp_gr = False
                     temp_nlri = ''
@@ -1011,7 +1011,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                             if temp_search[0]+'/'+temp_local_as in dict_bgp_group:
                                 dict_bgp_group[temp_search[0]+'/'+temp_local_as].NLRI = temp_nlri
                             else:
-                                print 'Group chua duoc khoi tao!!!'
+                                print('Group chua duoc khoi tao!!!')
                             list_line[i]='\n'
                         elif re.match('  peer ((?:[\d]{1,3}[\.]){3}[\d]{1,3}) group ([\S]*)\n',list_line[i]):
                             temp_search = re.match('  peer ((?:[\d]{1,3}[\.]){3}[\d]{1,3}) group ([\S]*)\n',
@@ -1019,7 +1019,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                             if temp_search[0]+'/'+temp_local_as in dict_bgp:
                                 dict_bgp[temp_search[0]+'/'+temp_local_as].Peer_group = temp_search[1]
                             else:
-                                print 'Peer chua duoc khoi tao'
+                                print('Peer chua duoc khoi tao')
                             list_line[i] = '\n'
                         elif re.match('  peer ([\S]*) reflect-client\n',list_line[i]):
                             #print 'Reflect-client',list_line[i],temp_cluster
@@ -1110,10 +1110,10 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                         i += 1
                     i -= 1
                 i += 1
-            print 'Data policy map:'
+            print('Data policy map:')
             for key in dict_policy_map:
                 dict_policy_map[key].insert(cursor)
-            print 'Data static route:'
+            print('Data static route:')
             for item in list_static:
                 #item.showdata()
                 if item.VRF_Name!='':
@@ -1125,23 +1125,23 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                         temp_vrf.Static_routing = True
                         dict_vrf[item.VRF_Name] = temp_vrf
                 item.insert(cursor)
-            print 'Update VRF Information'
+            print('Update VRF Information')
             for item in dict_vrf:
                 if dict_vrf[item].Static_routing == True:
                     dict_vrf[item].insert_new(cursor)
                 else:
                     dict_vrf[item].insert_new1(cursor)
-            print 'Data isis:'
+            print('Data isis:')
             for item in router_isis:
                 item.insert(cursor)
-            print 'Data RR bgp'
+            print('Data RR bgp')
             for item in dict_bgp_group:
                 dict_bgp_group[item].insert(cursor)
-            print 'Data BGP'
+            print('Data BGP')
             for item in dict_bgp:
                 #dict_bgp[item].showdata()
                 dict_bgp[item].insert(cursor)
-            print 'Data IE VRF:'
+            print('Data IE VRF:')
             for item in dict_vrf_ie:
                dict_vrf_ie[item].insert(cursor)
             i = 0
@@ -1150,9 +1150,9 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
 
     finally:

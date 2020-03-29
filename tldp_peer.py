@@ -8,7 +8,7 @@ class TLDP_Peer:
 
     def showdata(self):
         attrs = vars(self)
-        print TLDP_Peer.Hostname, ',', ','.join("%s: %s" % item for item in attrs.items())
+        print(TLDP_Peer.Hostname, ',', ','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_tldp_peer = ("INSERT INTO TLDP_Peer "

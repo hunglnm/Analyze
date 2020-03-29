@@ -1,7 +1,7 @@
 from acl import ACL_detail,ACL
 import os
 import re
-import MySQLdb
+import pymysql
 class acl_process:
     def __init__(self):
         self.Str1 =''
@@ -10,7 +10,7 @@ class acl_process:
 
     def showdata(self):
         attrs = vars(self)
-        print ','.join("%s: %s" % item for item in attrs.items())
+        print(','.join("%s: %s" % item for item in list(attrs.items())))
 
 
 def get_next_word(str1,str2):
@@ -242,7 +242,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                         temp_acl_name = list_line[i].strip().split(" ")[1]
                         temp_str = list_line[i].strip().split()[0] + ' ' + list_line[i].strip().split()[1] + ' '
                         temp_str = list_line[i].strip()[len(temp_str):]
-                        if temp_acl_name in list_acl_index.keys():
+                        if temp_acl_name in list(list_acl_index.keys()):
                             temp_index=list_acl_index[temp_acl_name]+1
                             temp_acl_detail=acl_extended1(temp_str)
                             temp_acl_detail.Name = temp_acl_name
@@ -360,7 +360,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                             if temp_search[3] is not None:
                                 temp_acl_detail.VRF_Name = temp_search[3]
                             if temp_search[4] is not None:
-                                print 'Chua tao attribute fragment'
+                                print('Chua tao attribute fragment')
                             if temp_search[5] is not None:
                                 temp_acl_detail.Prefix_Source = temp_search[5]
                             if temp_search[6] is not None:
@@ -395,7 +395,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                             if temp_search[3] is not None:
                                 temp_acl_detail.VRF_Name = temp_search[3]
                             if temp_search[4] is not None:
-                                print 'Chua tao attribute fragment'
+                                print('Chua tao attribute fragment')
                             if temp_search[5] is not None:
                                 temp_acl_detail.Prefix_Source = temp_search[5]
                             if temp_search[6] is not None:
@@ -442,7 +442,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                             if temp_search[2] is not None:
                                 temp_acl_detail.VRF_Name = temp_search[2]
                             if temp_search[3] is not None:
-                                print 'Chua tao attribute Fragment'
+                                print('Chua tao attribute Fragment')
                             #print 'DK1:'
                             #temp_acl_detail.showdata()
                             dict_acl_detail[temp_acl_detail.Name+'/'+temp_acl_detail.Index_1] = temp_acl_detail
@@ -500,9 +500,9 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

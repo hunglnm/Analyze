@@ -3,7 +3,7 @@ import re
 
 def re_show_data(pattern1, tmp_str):
     result = re.search(pattern1, tmp_str,)
-    print result.groups(), result.start(), result.end()
+    print(result.groups(), result.start(), result.end())
     #pattern = re.compile(pattern1, re.MULTILINE)
     #print pattern.groupindex
     #i = 0

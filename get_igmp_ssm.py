@@ -1,5 +1,5 @@
 from igmp_ssm import IGMP_SSM
-import MySQLdb
+import pymysql
 import os
 import re
 
@@ -48,9 +48,9 @@ def get_igmp_ssm_from_log(list_line, hostname, Dev, total_lines, log_path, f_fil
                     f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql
 
 
 class POLICYMAP:
@@ -21,7 +21,7 @@ class POLICYMAP:
             #print list_rows
             list_policy_map = {x[0]: POLICYMAP.insert_item(x[0], hostname, cursor) for x in list_rows}
             return list_policy_map
-        except MySQLdb.Error, e:
+        except pymysql.Error as e:
             print (e)
 
     @staticmethod
@@ -44,10 +44,10 @@ class POLICYMAP:
             list_mf = []
             if len(list_rows) > 0:
                 #print 'MF:',list_rows
-                list_mf = list(map(lambda x: MF.insert_mf(x), list_rows))
+                list_mf = list([MF.insert_mf(x) for x in list_rows])
 
             return list_mf
-        except MySQLdb.Error, e:
+        except pymysql.Error as e:
             print (e)
 
     @staticmethod
@@ -63,7 +63,7 @@ class POLICYMAP:
                 list_acl = FF.insert_acl_list(list_rows[0][2], hostname, cursor)
 
             return list_acl
-        except MySQLdb.Error, e:
+        except pymysql.Error as e:
             print (e)
 
 class FF:
@@ -90,7 +90,7 @@ class FF:
               "from acl_detail where hostname = '%s' and Name = '%s' " % ( hostname,info)
         cursor.execute(sql)
         list_rows = cursor.fetchall()
-        tmp_acl_list = list(map(lambda x: FF.insert_acl(x),list_rows))
+        tmp_acl_list = list([FF.insert_acl(x) for x in list_rows])
         return tmp_acl_list
 
 class MF:
@@ -110,7 +110,7 @@ class MF:
 
     def showdata(self):
         attrs = vars(self)
-        print ','.join("%s: %s" % item for item in attrs.items())
+        print(','.join("%s: %s" % item for item in list(attrs.items())))
 
     @staticmethod
     def insert_mf(info):

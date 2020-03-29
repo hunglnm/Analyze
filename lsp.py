@@ -20,7 +20,7 @@ class LSP:
 
     def showdata(self):
         attrs = vars(self)
-        print LSP.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(LSP.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_lsp = ("INSERT INTO LSP "

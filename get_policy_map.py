@@ -1,5 +1,5 @@
 from policy_map import Policy_map
-import MySQLdb
+import pymysql
 import os
 import re
 
@@ -13,7 +13,7 @@ class classifier:
 
     def showdata(self):
         attrs = vars(self)
-        print  ','.join("%s: %s" % item for item in attrs.items())
+        print(','.join("%s: %s" % item for item in list(attrs.items())))
 
 
 class behaviour:
@@ -35,7 +35,7 @@ class behaviour:
 
     def showdata(self):
         attrs = vars(self)
-        print ','.join("%s: %s" % item for item in attrs.items())
+        print(','.join("%s: %s" % item for item in list(attrs.items())))
 
 
 def get_next_word(str1,str2):
@@ -143,7 +143,7 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                         if check_cond == True:
                             f.write("\n")
                             if temp_policy_map.Name == 'VPN_ERS_1M':
-                                print list_line[i]
+                                print(list_line[i])
                             temp_str = list_line[i+1]
                         if (" class " in temp_str) or ("!" in temp_str) or ("policy-map" in temp_str):
                             temp_policy_map.insert(cursor)
@@ -166,7 +166,7 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                             temp_policy_map = Policy_map()
                             temp_policy_map.Name = temp_policy_map_name
                             temp_policy_map.Class = get_next_word(list_line[i], ' class ')
-                            print temp_policy_map.Class
+                            print(temp_policy_map.Class)
                         if ' police ' in list_line[i]:
                             if get_next_word(list_line[i], ' police ') == 'rate':
                                 temp_policy_map.Police = 0
@@ -208,7 +208,7 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                             list_line[i] = '\n'
                         temp_str = list_line[i + 1]
                         if re.match(' !\n', temp_str):
-                            print 'Ket qua duoc ghi:'
+                            print('Ket qua duoc ghi:')
                             temp_policy_map.showdata()
                             temp_policy_map.insert(cursor)
                         i += 1
@@ -379,9 +379,9 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

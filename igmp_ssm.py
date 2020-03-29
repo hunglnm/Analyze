@@ -6,9 +6,9 @@ class IGMP_SSM:
         self.Source = ""
 
     def showdata(self):
-        print self.Hostname
-        print self.ACL
-        print self.Source
+        print(self.Hostname)
+        print(self.ACL)
+        print(self.Source)
 
     def insert(self, cursor):
         add_igmp_ssm = ("INSERT INTO IGMP_SSM "

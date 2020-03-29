@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql
 
 class ACL:
     Hostname = ""
@@ -11,7 +11,7 @@ class ACL:
 
     def showdata(self):
         attrs = vars(self)
-        print ACL.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(ACL.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_acl = ("INSERT INTO ACL "
@@ -43,7 +43,7 @@ class ACL_detail:
 
     def showdata(self):
         attrs = vars(self)
-        print ACL_detail.Hostname, ',', ','.join("%s: %s" % item for item in attrs.items())
+        print(ACL_detail.Hostname, ',', ','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_acl_detail = ("INSERT INTO ACL_detail "

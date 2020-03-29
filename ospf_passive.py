@@ -8,12 +8,12 @@ class OSPF_Passive:
         self.Area =""
 
     def showdata(self):
-        print self.IFL
-        print self.Hostname
-        print self.VRF_Name
-        print self.OSPF
-        print self.Passive
-        print self.Area
+        print(self.IFL)
+        print(self.Hostname)
+        print(self.VRF_Name)
+        print(self.OSPF)
+        print(self.Passive)
+        print(self.Area)
 
     def insert(self, cursor):
         add_ospf_ifl = ("INSERT INTO OSPF_Passive "

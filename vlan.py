@@ -5,9 +5,9 @@ class VLAN:
         self.Description=""
         self.L2_age_time=14400
     def showdata(self):
-        print self.Hostname
-        print self.Vlan
-        print self.Description
+        print(self.Hostname)
+        print(self.Vlan)
+        print(self.Description)
 
     def insert(self, cursor):
         add_vlan = ("INSERT INTO VLAN "

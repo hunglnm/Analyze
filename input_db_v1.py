@@ -15,7 +15,7 @@ def get_hostname():
 #Find keyword positions
 def pos_key():
 	if "76" in Hostname:
-		print "The device is C76xx"
+		print("The device is C76xx")
 	#group level 1 :vrf>dhcp>policy-map>l2 vfi>interface>interface vlan>router>router bgp>static>ACL>route-map
 		global cfg_start
 		global pos_vrf_start
@@ -51,7 +51,7 @@ def pos_key():
 			i+=1
 		if cfg_start==0:
 			i=0
-		print "Position of configuration start:",cfg_start
+		print("Position of configuration start:",cfg_start)
 		while (i<numlines):
 			if ("ip vrf " in f_line[i]):
 				pos_vrf_start=i
@@ -59,7 +59,7 @@ def pos_key():
 			i+=1
 		if pos_vrf_start==0 :
 			i=cfg_start
-		print "Position of VRF start:",pos_vrf_start		
+		print("Position of VRF start:",pos_vrf_start)		
 		while (i<numlines):
 			if ("ip dhcp pool " in f_line[i]):
 				pos_dhcp_start=i
@@ -67,7 +67,7 @@ def pos_key():
 			i+=1
 		if pos_dhcp_start==0 :
 			i=pos_vrf_start+1
-		print "Position of DHCP start:",pos_dhcp_start
+		print("Position of DHCP start:",pos_dhcp_start)
 		while (i<numlines):
 			if ("policy-map"==f_line[i].strip().split(" ")[0]):
 				pos_policy_start=i
@@ -75,7 +75,7 @@ def pos_key():
 			i+=1
 		if pos_policy_start==0 :
 			i=pos_vrf_start+1
-		print "Position of policy start:",pos_policy_start
+		print("Position of policy start:",pos_policy_start)
 		while (i<numlines):
 			if ("l2 vfi " in f_line[i]):
 				pos_vfi_start=i
@@ -83,7 +83,7 @@ def pos_key():
 			i+=1
 		if pos_vfi_start==0 :
 			i=pos_vrf_start+1
-		print "Position of VFI start:",pos_vfi_start
+		print("Position of VFI start:",pos_vfi_start)
 		while (i<numlines):
 			if ("interface " in f_line[i]):
 				pos_interface_start=i
@@ -91,7 +91,7 @@ def pos_key():
 			i+=1
 		if pos_interface_start==0 :
 			i=pos_vrf_start+1
-		print "Position of interface start:",pos_interface_start
+		print("Position of interface start:",pos_interface_start)
 		while (i<numlines):
 			if ("interface Vlan" in f_line[i]):
 				pos_interface_vlan_start=i
@@ -99,7 +99,7 @@ def pos_key():
 			i+=1
 		if pos_interface_vlan_start==0 :
 			i=pos_vrf_start+1
-		print "Position of vlan interface start:",pos_interface_vlan_start
+		print("Position of vlan interface start:",pos_interface_vlan_start)
 		while (i<numlines):
 			if ("router"==f_line[i].strip().split(" ")[0]):
 				pos_router_start=i
@@ -107,7 +107,7 @@ def pos_key():
 			i+=1
 		if pos_router_start==0 :
 			i=pos_vrf_start+1
-		print "Position of router start:",pos_router_start
+		print("Position of router start:",pos_router_start)
 		while (i<numlines):
 			if ("router bgp " in f_line[i]):
 				pos_router_bgp_start=i
@@ -115,7 +115,7 @@ def pos_key():
 			i+=1
 		if pos_router_bgp_start==0 :
 			i=pos_vrf_start+1
-		print "Position of bgp start:",pos_router_bgp_start
+		print("Position of bgp start:",pos_router_bgp_start)
 		while (i<numlines):
 			if ("ip route vrf " in f_line[i]):
 				pos_static_start=i
@@ -123,7 +123,7 @@ def pos_key():
 			i+=1
 		if pos_static_start==0 :
 			i=pos_vrf_start+1
-		print "Position of static start:",pos_static_start
+		print("Position of static start:",pos_static_start)
 		while (i<numlines):
 			if ("ip access-list " in f_line[i]):
 				pos_acl_start=i
@@ -131,7 +131,7 @@ def pos_key():
 			i+=1	
 		if pos_acl_start==0 :
 			i=pos_vrf_start+1
-		print "Position of ACL start:",pos_acl_start
+		print("Position of ACL start:",pos_acl_start)
 		while (i<numlines):
 			if ("route-map " in f_line[i]):
 				pos_route_map_start=i
@@ -139,16 +139,16 @@ def pos_key():
 			i+=1		
 		if pos_route_map_start==0 :
 			i=pos_vrf_start+1
-		print "Position of route-map start:",pos_route_map_start
+		print("Position of route-map start:",pos_route_map_start)
 		while (i<numlines):
 			if f_line[i]=="end\n":
 				cfg_end=i
 				break
 			i+=1
-		print "Position of configuration end:",cfg_end
+		print("Position of configuration end:",cfg_end)
 #ASR
 	elif Hostname[0:2]=="ASR":
-		print "The device is ASR"	
+		print("The device is ASR")	
 		while (i<numlines):
 			if ("Building configuration" in f_line[i]):
 				cfg_start=i
@@ -221,16 +221,16 @@ def main():
 	global conn
 	global cursor
 	#Information of file
-	s_path=raw_input("Enter the path:")
+	s_path=input("Enter the path:")
 	dirs=os.listdir(s_path)
 
 	check_continue="y"
 	ifile=0
 	for file in dirs:
-		print file
-		get_inf=raw_input("Do you get information of this file?(y/n)")
+		print(file)
+		get_inf=input("Do you get information of this file?(y/n)")
 		if get_inf!="y":
-			check_continue=raw_input("Do you continue?(y/n)")
+			check_continue=input("Do you continue?(y/n)")
 			if check_continue=="n":break
 		else:
 			ifile+=1
@@ -242,7 +242,7 @@ def main():
 		#how many lines in this file ?
 			f=open(complete_path,"r")
 			numlines = sum(1 for line in f)
-			print "Total command lines on cisco routers : ", numlines 
+			print("Total command lines on cisco routers : ", numlines) 
 			f.close()
 		#split the file to lines 
 			f=open(complete_path,"r")
@@ -251,10 +251,10 @@ def main():
 			
 			get_hostname()
 			pos_key()
-			print "####################\nUpdate database.\nSelect:"
-			print "1.Insert CLI for "+Hostname+" into DB.\n1d.Delete CLI with "+Hostname+" in CLI_Router."
-			print "a.Insert all info for "+Hostname+" into DB.\nc.Cancel"
-			selected_db=raw_input("Please select the above list:")
+			print("####################\nUpdate database.\nSelect:")
+			print("1.Insert CLI for "+Hostname+" into DB.\n1d.Delete CLI with "+Hostname+" in CLI_Router.")
+			print("a.Insert all info for "+Hostname+" into DB.\nc.Cancel")
+			selected_db=input("Please select the above list:")
 			try:
 				conn =mysql.connector.connect(user='root', password='hunglnm2307',host='127.0.0.1',database='hcmpt')
 				cursor = conn.cursor()
@@ -265,9 +265,9 @@ def main():
 				elif selected_db=="a":
 					insert_cli_into_db()
 				elif selected_db=="c":
-					print "Nothing is updated!"
+					print("Nothing is updated!")
 				else:
-					print "Wrong selection!"
+					print("Wrong selection!")
 			except Error as error:
 				print(error)
 			finally:

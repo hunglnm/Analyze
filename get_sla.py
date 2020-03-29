@@ -1,12 +1,12 @@
 from sla import SLA
-import MySQLdb
+import pymysql
 import os
 
 
 def get_sla_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
     try:
         i = 0
-        print '---Check SLA---'
+        print('---Check SLA---')
         SLA.Hostname = hostname
         if not os.path.exists(log_path + "Logs/SLA"):
             os.mkdir(log_path + "Logs/SLA")
@@ -115,9 +115,9 @@ def get_sla_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

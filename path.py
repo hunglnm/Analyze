@@ -7,7 +7,7 @@ class Path:
 
     def showdata(self):
         attrs = vars(self)
-        print Path.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(Path.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_path = ("INSERT INTO Path "
@@ -28,7 +28,7 @@ class Path_detail:
 
     def showdata(self):
         attrs = vars(self)
-        print Path_detail.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(Path_detail.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_path_detail = ("INSERT INTO Path_detail "

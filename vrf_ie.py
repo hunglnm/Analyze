@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql
 
 class VRF_IE:
     Hostname = ""
@@ -16,7 +16,7 @@ class VRF_IE:
 
     def showdata(self):
         attrs = vars(self)
-        print VRF_IE.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(VRF_IE.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_l3vpn_ie = ("INSERT INTO VRF_IE "

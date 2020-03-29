@@ -14,7 +14,7 @@ class Static_Route:
 
     def showdata(self):
         attrs = vars(self)
-        print Static_Route.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(Static_Route.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_static =("INSERT INTO Static_route "

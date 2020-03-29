@@ -1,5 +1,5 @@
 from server import  Server
-import MySQLdb
+import pymysql
 import os
 import re
 
@@ -163,9 +163,9 @@ def get_server_from_log(list_line,hostname,Dev,total_lines,log_path, conn, curso
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

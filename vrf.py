@@ -22,7 +22,7 @@ class VRF:
 
     def showdata(self):
         attrs = vars(self)
-        print VRF.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(VRF.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_l3vpn = ("INSERT INTO VRF "

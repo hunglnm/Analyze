@@ -1,4 +1,4 @@
-import MySQLdb
+import pymysql
 import re
 
 class Route_map:
@@ -13,7 +13,7 @@ class Route_map:
 
     def showdata(self):
         attrs = vars(self)
-        print Route_map.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(Route_map.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_route_map =("INSERT INTO Route_map "

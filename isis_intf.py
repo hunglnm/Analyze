@@ -8,7 +8,7 @@ class ISIS_INTF:
 
     def showdata(self):
         attrs = vars(self)
-        print ISIS_INTF.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(ISIS_INTF.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_isis_ifl = ("INSERT INTO ISIS_INTF "

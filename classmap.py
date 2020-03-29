@@ -14,7 +14,7 @@ class Classmap:
 
     def showdata(self):
         attrs = vars(self)
-        print Classmap.Hostname, ',', ','.join("%s: %s" % item for item in attrs.items())
+        print(Classmap.Hostname, ',', ','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_classmap = ("INSERT INTO Classmap "

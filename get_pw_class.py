@@ -1,5 +1,5 @@
 from pw_class import PW_Class
-import MySQLdb
+import pymysql
 import os
 import re
 
@@ -63,9 +63,9 @@ def get_pw_class_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cur
                 f.write(list_line[i])
                 i +=1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

@@ -3,7 +3,7 @@ from mysql.connector import MySQLConnection,Error
 import mysql.connector
 import os
 import re
-import MySQLdb
+import pymysql
 
 def IsInt(s):
     try:
@@ -50,7 +50,7 @@ def get_route_map_from_log(list_line,hostname,Dev,total_lines,log_path,conn,curs
         elif Dev == "ASR9k":
             while i < total_lines:
                 if re.match('route-policy (.*)\n',list_line[i]):
-                    print re.match('route-policy (.*)\n',list_line[i]).groups()
+                    print(re.match('route-policy (.*)\n',list_line[i]).groups())
                     temp_route_map_name = re.match('route-policy (.*)\n',list_line[i]).groups()[0]
                     temp_Seq = 0
                     temp_create_route_map = True
@@ -110,9 +110,9 @@ def get_route_map_from_log(list_line,hostname,Dev,total_lines,log_path,conn,curs
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         f.close()

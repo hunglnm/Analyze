@@ -17,7 +17,7 @@ from get_lsp_path import *
 from get_acl import *
 from get_server import *
 from get_route_map import *
-import MySQLdb
+import pymysql
 from get_policy_db import *
 
 
@@ -28,14 +28,14 @@ def about_router(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Router---")
     check_continue = "y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path + file_name_cnf
         # how many lines in this file ?
         if os.path.isfile(complete_path):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -44,15 +44,15 @@ def about_router(s_path, conn, cursor):
             Device = host_dev[1]
             s_notification = ""
             if Hostname == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file:missing hostname"
             else:
                 if Device == '':
-                    print "Please check file:", file
+                    print("Please check file:", file)
                     s_notification = "Please check this file:cannot detect type of router"
                 else:
-                    print "Processing for ", Hostname
-                    print Device
+                    print("Processing for ", Hostname)
+                    print(Device)
                     delete_db(Hostname, conn, cursor)
                     log_path = s_path + "Logs/"
                     get_router_from_txt(f_line, Hostname, Device, numlines, log_path, conn, cursor)
@@ -72,7 +72,7 @@ def about_vrf(s_path,conn ,cursor):
         f.write(str(datetime.datetime.now().date())+"---VRF---")
     check_continue = "y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
@@ -80,7 +80,7 @@ def about_vrf(s_path,conn ,cursor):
             f_file = ''
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -91,7 +91,7 @@ def about_vrf(s_path,conn ,cursor):
             Device = host_dev[1]
             s_notification = ""
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 #print s_path1
@@ -112,14 +112,14 @@ def about_dhcp(s_path, conn, cursor):
     with open(s_path + "selected_files.txt", "w") as f:
         f.write(str(datetime.datetime.now().date())+"---DHCP---")
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -128,7 +128,7 @@ def about_dhcp(s_path, conn, cursor):
             Device = host_dev[1]
             s_notification = ""
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_dhcp_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -145,7 +145,7 @@ def about_igmp_ssm(s_path, conn, cursor):
     with open(s_path + "selected_files.txt", "w") as f:
         f.write(str(datetime.datetime.now().date())+"---IGMP SSM---")
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         f_file = ''
@@ -155,7 +155,7 @@ def about_igmp_ssm(s_path, conn, cursor):
                 numlines = sum(1 for line in f)
             with open(complete_path,'r') as f:
                 f_file = f.read()
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -164,7 +164,7 @@ def about_igmp_ssm(s_path, conn, cursor):
             Device = host_dev[1]
             s_notification = ""
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_igmp_ssm_from_log(f_line, Hostname, Device, numlines, s_path, f_file, conn, cursor)
@@ -182,14 +182,14 @@ def about_sla(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---SLA---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -198,7 +198,7 @@ def about_sla(s_path, conn, cursor):
             Device = host_dev[1]
             s_notification = ""
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_sla_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -219,14 +219,14 @@ def about_tldp_peer(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---TLDP-Peer---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -235,7 +235,7 @@ def about_tldp_peer(s_path, conn, cursor):
             Device = host_dev[1]
             s_notification = ""
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_tldp_peer_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -256,14 +256,14 @@ def about_vlan(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---VLAN---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -271,10 +271,10 @@ def about_vlan(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_vlan_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -295,14 +295,14 @@ def about_classmap(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Classmap---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -310,10 +310,10 @@ def about_classmap(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_classmap_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -334,14 +334,14 @@ def about_policy(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Policy-map---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -349,10 +349,10 @@ def about_policy(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_policy_map_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -373,14 +373,14 @@ def about_pw_class(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---PW Class---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -388,10 +388,10 @@ def about_pw_class(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_pw_class_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -412,14 +412,14 @@ def about_l2vpn(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---L2VPN---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -427,10 +427,10 @@ def about_l2vpn(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_l2vpn_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -451,14 +451,14 @@ def about_interface(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Interface---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -466,10 +466,10 @@ def about_interface(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_interface_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -490,14 +490,14 @@ def about_routing(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Routing---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -505,10 +505,10 @@ def about_routing(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_routing_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -529,14 +529,14 @@ def about_lsp_path(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---LSP Path---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -544,10 +544,10 @@ def about_lsp_path(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_lsp_path_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -568,14 +568,14 @@ def about_acl(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---ACL---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -583,10 +583,10 @@ def about_acl(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_acl_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -607,7 +607,7 @@ def about_server(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Server---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         f_file = ''
@@ -615,7 +615,7 @@ def about_server(s_path, conn, cursor):
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -623,10 +623,10 @@ def about_server(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_server_from_log(f_line, Hostname, Device, numlines, s_path, conn, cursor)
@@ -647,14 +647,14 @@ def about_route_map(s_path, conn, cursor):
         f.write(str(datetime.datetime.now().date())+"---Route map---")
     check_continue ="y"
     for file in dirs:
-        print file
+        print(file)
         file_name_cnf = file
         complete_path = s_path1 + file_name_cnf
         # how many lines in this file ?
         if (os.path.isfile(complete_path)):
             with open(complete_path, "r") as f:
                 numlines = sum(1 for line in f)
-            print "Total command lines on cisco routers : ", numlines
+            print("Total command lines on cisco routers : ", numlines)
             # split the file to lines
             with open(complete_path, "r") as f:
                 f_line = f.readlines()
@@ -662,10 +662,10 @@ def about_route_map(s_path, conn, cursor):
             Hostname = host_dev[0]
             Device = host_dev[1]
             s_notification = ""
-            print Hostname
-            print Device
+            print(Hostname)
+            print(Device)
             if Device == "":
-                print "Please check file:", file
+                print("Please check file:", file)
                 s_notification = "Please check this file"
             else:
                 get_route_map_from_log(f_line,Hostname,Device,numlines,s_path, conn, cursor)
@@ -686,9 +686,9 @@ def delete_db(hostname, conn, cursor):
                  'l2vpn', 'lsp', 'ospf', 'ospf_passive', 'path', 'path_detail', 'policy_map', 'pw_class', \
                  'redistribute', 'route_map', 'router', 'server', 'sla', 'static_route', 'tldp_peer', \
                  'vlan', 'vrf', 'vrf_ie', 'vsi','bfd']
-        print 'DB is deleting information of ', hostname
+        print('DB is deleting information of ', hostname)
         for item in list_db:
-            print 'You re working with ' + item
+            print('You re working with ' + item)
             sql_query = ("select * from " + item + " where Hostname= '%s'") % hostname
             cursor.execute(sql_query)
             row = cursor.fetchall()
@@ -697,20 +697,20 @@ def delete_db(hostname, conn, cursor):
                 cursor.execute(sql_query)
                 conn.commit()
             else:
-                print "No information of %s in table %s" % (hostname,item)
+                print("No information of %s in table %s" % (hostname,item))
         #check_cont=raw_input('Do you continue?')
         #if check_cont=='n':
         #    break
-    except MySQLdb.Error, e:
+    except pymysql.Error as e:
         print (e)
         # rollback in case there is any error
 
 def menu_1():
-    print "1.Get informations of routers"
-    print "2.Debug"
-    print "3.Lay thong tin policy+acl"
-    print "e.Exit"
-    sel_index = raw_input("Please choose above options:")
+    print("1.Get informations of routers")
+    print("2.Debug")
+    print("3.Lay thong tin policy+acl")
+    print("e.Exit")
+    sel_index = input("Please choose above options:")
     return sel_index
 
 def main():
@@ -720,93 +720,93 @@ def main():
     global numlines
     global f_line
     global s_path
+    global txt_sql
     # Connector to mysql
     try:
-        conn = MySQLdb.connect('127.0.0.1', 'root', 'hunglnm2307', 'vnpt')
+        conn = pymysql.connect('127.0.0.1', 'root', '123456', 'vnpt')
         cursor = conn.cursor()
-
         # Information of file
-        s_path = raw_input("Enter the path:")
+        s_path = input("Enter the path:")
         if os.path.isfile(s_path + "selected_files.txt"):
             os.remove(s_path + "selected_files.txt")
         sel_index = menu_1()
         while sel_index != 'e':
             if sel_index == '1':
-                print 'Getting router information!'
+                print('Getting router information!')
                 about_router(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting vrf information!'
+                print('Getting vrf information!')
                 about_vrf(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting DHCP information!'
+                print('Getting DHCP information!')
                 about_dhcp(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting IGMP SSM information!'
+                print('Getting IGMP SSM information!')
                 about_igmp_ssm(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting SLA information!'
+                print('Getting SLA information!')
                 about_sla(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting TLDP information!'
+                print('Getting TLDP information!')
                 about_tldp_peer(s_path, conn, cursor)
                 time.sleep(10)
-                print 'Getting VLAN information!'
+                print('Getting VLAN information!')
                 about_vlan(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting Traffic class information!'
+                print('Getting Traffic class information!')
                 about_classmap(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting VRF import/export information!'
+                print('Getting VRF import/export information!')
                 about_policy(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting Tunnel information!'
+                print('Getting Tunnel information!')
                 about_pw_class(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting L2VPN information!'
+                print('Getting L2VPN information!')
                 about_l2vpn(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting IFD/IFL/L2circuit information!'
+                print('Getting IFD/IFL/L2circuit information!')
                 about_interface(s_path, conn, cursor)
                 time.sleep(15)
-                print 'Getting Routing/VRF import/export information!'
+                print('Getting Routing/VRF import/export information!')
                 about_routing(s_path, conn, cursor)
                 time.sleep(15)
-                print 'Getting LSP Path information!'
+                print('Getting LSP Path information!')
                 about_lsp_path(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting ACL information!'
+                print('Getting ACL information!')
                 about_acl(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting Server information!'
+                print('Getting Server information!')
                 about_server(s_path, conn, cursor)
                 time.sleep(5)
-                print 'Getting Route map information!'
-                print 'With HW,these info were get in routing part'
+                print('Getting Route map information!')
+                print('With HW,these info were get in routing part')
                 about_route_map(s_path, conn, cursor)
                 time.sleep(5)
                 sel_index = 'e'
             elif sel_index == '2':
-                print "=========================="
-                print "1.Get general information of routers"
-                print "2.Get L3VPN information"
-                print "3.Get DHCP information"
-                print "4.Get IGMP SSM"
-                print "5.Get SLA"
-                print "6.Get TLDP Peer"
-                print "7.Get VLAN"
-                print "8.Get Class-map"
-                print "9.Get Policy-map"
-                print "10.Get PW Class"
-                print "11.Get L2VPN"
-                print "12.Get interfaces(IFD/IFL)/LSP/Update IFL for L2circuit/ISIS-IFL"
-                print "13.Get routing"
-                print "14.Get LSP Path"
-                print "15.Get ACL"
-                print "16.Get server"
-                print "17.Get Route-map"
-                print "18.Delete database follow by hostname"
-                print "19.Return main menu"
-                sel_index1 = raw_input("Please choose above options:")
+                print("==========================")
+                print("1.Get general information of routers")
+                print("2.Get L3VPN information")
+                print("3.Get DHCP information")
+                print("4.Get IGMP SSM")
+                print("5.Get SLA")
+                print("6.Get TLDP Peer")
+                print("7.Get VLAN")
+                print("8.Get Class-map")
+                print("9.Get Policy-map")
+                print("10.Get PW Class")
+                print("11.Get L2VPN")
+                print("12.Get interfaces(IFD/IFL)/LSP/Update IFL for L2circuit/ISIS-IFL")
+                print("13.Get routing")
+                print("14.Get LSP Path")
+                print("15.Get ACL")
+                print("16.Get server")
+                print("17.Get Route-map")
+                print("18.Delete database follow by hostname")
+                print("19.Return main menu")
+                sel_index1 = input("Please choose above options:")
                 if sel_index1 == "1":
                     about_router(s_path)
                 elif sel_index1 == "2":
@@ -846,7 +846,7 @@ def main():
                 sql = 'select hostname from router'
                 cursor.execute(sql)
                 list_rows = cursor.fetchall()
-                list_router = list(map(lambda x: x[0],list_rows))
+                list_router = list([x[0] for x in list_rows])
                 f = open(s_path + "policy_map.txt", "w")
                 for item in list_router:
                     f.write('-----------------------------------\n')
@@ -858,16 +858,16 @@ def main():
                             for tmp_mf in list_policy_map[key].mf_list:
                                 f.write('**MF chi tiet:\n')
                                 attrs1 = vars(tmp_mf)
-                                f.write(','.join("%s: %s" % item2 for item2 in attrs1.items()) + '\n')
+                                f.write(','.join("%s: %s" % item2 for item2 in list(attrs1.items())) + '\n')
                         f.write('-------------\n')
                         if len(list_policy_map[key].acl_list) > 0:
                             for tmp_acl in list_policy_map[key].acl_list:
                                 f.write('**ACL chi tiet:\n')
                                 attrs1 = vars(tmp_acl)
-                                f.write(','.join("%s: %s" % item2 for item2 in attrs1.items()) + '\n')
+                                f.write(','.join("%s: %s" % item2 for item2 in list(attrs1.items())) + '\n')
                 f.close()
                 sel_index = 'e'
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
     finally:
         cursor.close()

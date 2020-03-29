@@ -8,7 +8,7 @@ class PW_Class:
 
     def showdata(self):
         attrs = vars(self)
-        print PW_Class.Hostname, ',', ','.join("%s: %s" % item for item in attrs.items())
+        print(PW_Class.Hostname, ',', ','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_pw_class = ("INSERT INTO PW_Class "

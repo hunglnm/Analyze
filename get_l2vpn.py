@@ -1,5 +1,5 @@
 from l2vpn import L2VPN, VSI
-import MySQLdb
+import pymysql
 import os
 import re
 from ifl import IFL
@@ -87,11 +87,11 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                                 temp_l2vpn.Encap = list_line[i].strip().split(" ")[2].strip()
                                 temp_l2vpn.VC_ID = temp_l2vpn_vpn_id
                                 if temp_l2vpn.Encap != "encapsulation":
-                                    print list_line[i]
-                                    print temp_l2vpn.VC_ID
+                                    print(list_line[i])
+                                    print(temp_l2vpn.VC_ID)
                                     temp_l2vpn.VC_ID = int(list_line[i].strip().split(" ")[2])
                                     temp_l2vpn.Encap = list_line[i].strip().split(" ")[3].strip()
-                                    print temp_l2vpn.VC_ID
+                                    print(temp_l2vpn.VC_ID)
                             if "no-split-horizon" in list_line[i]:
                                 temp_l2vpn.No_split = True
                             list_line[i] = '\n'
@@ -159,7 +159,7 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                 if (pos_1 > 0) and (pos_2 > 0) and (pos_3 > 0):
                     break
                 i += 1
-            print pos_1, pos_2, pos_3
+            print(pos_1, pos_2, pos_3)
             i = pos_1
             while i < pos_2:
                 if re.match('  p2p ', list_line[i]):
@@ -261,7 +261,7 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                                 #temp_l2vpn.showdata()
                                 temp_l2vpn.insert(cursor)
                         else:
-                            print list_line[i]
+                            print(list_line[i])
                         i += 1
                 elif re.match('^ !\n',list_line[i]):
                     temp_desc = ''
@@ -375,9 +375,9 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                 f.write(list_line[i])
                 i += 1
         else:
-            print "Device is not support in this script"
+            print("Device is not support in this script")
         conn.commit()
-    except MySQLdb.Error as error:
+    except pymysql.Error as error:
         print(error)
         for key in list_l2vpn:
             if list_l2vpn[key].vsi_id >2147483647:

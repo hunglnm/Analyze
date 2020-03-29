@@ -21,7 +21,7 @@ class VSI:
 
     def showdata(self):
         attrs = vars(self)
-        print VSI.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(VSI.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_vsi = ("INSERT INTO VSI "
@@ -69,7 +69,7 @@ class L2VPN:
 
     def showdata(self):
         attrs = vars(self)
-        print L2VPN.Hostname,',',','.join("%s: %s" % item for item in attrs.items())
+        print(L2VPN.Hostname,',',','.join("%s: %s" % item for item in list(attrs.items())))
 
     def insert(self, cursor):
         add_l2vpn = ("INSERT INTO L2VPN "

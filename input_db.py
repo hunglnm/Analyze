@@ -72,7 +72,7 @@ def insert_data_router():
 		cursor.execute(add_router, data_router)
 		
 		if cursor.lastrowid:
-			print('last insert id', cursor.lastrowid)
+			print(('last insert id', cursor.lastrowid))
 		else:
 			print('last insert id not found')
 		conn.commit()
@@ -84,7 +84,7 @@ def insert_data_router():
 ###############Insert data into table IFD############
 def insert_data_ifd():
 	i=pos_interface_start
-	print Hostname
+	print(Hostname)
 	while i<pos_interface_vlan_start:
 		Name=""
 		Type="non-ae"#ae/non-ae
@@ -98,7 +98,7 @@ def insert_data_ifd():
 			if ((("Port-channel" in f_line[i].strip().split(" ")[1]) or ("TenGigabitEthernet" in f_line[i].strip().split(" ")[1])or("GigabitEthernet" in f_line[i].strip().split(" ")[1]))and("." not in f_line[i].strip().split(" ")[1])):
 				Line=i
 				Name=f_line[i].strip().split(" ")[1]
-				print Name
+				print(Name)
 				if ("Port-channel" in f_line[i].strip().split(" ")[1]) :
 					Type="ae"
 				i+=1
@@ -129,7 +129,7 @@ def insert_data_ifd():
 					cursor.execute(add_ifd, data_ifd)
 		
 					if cursor.lastrowid:
-						print('last insert id', cursor.lastrowid)
+						print(('last insert id', cursor.lastrowid))
 					else:
 						print('last insert id not found')
 					conn.commit()
@@ -157,9 +157,9 @@ def main():
 	global Hostname
 	global f_line
 	#Information of file
-	print "Copy this py file into the same folder with configuration files" 
-	s_path=raw_input("Enter the path:")
-	file_name_cnf = raw_input("Enter the currently configuration file name :")
+	print("Copy this py file into the same folder with configuration files") 
+	s_path=input("Enter the path:")
+	file_name_cnf = input("Enter the currently configuration file name :")
 	complete_path=s_path+file_name_cnf
 	#Read file###########
 	#how many lines in this file ?
@@ -191,13 +191,13 @@ def main():
 	while (i<numlines):
 		if ("hostname"==f_line[i].strip().split(" ")[0]):
 			pos_start=i
-			print pos_start
+			print(pos_start)
 			break
 		i+=1
 	while (i<numlines):
 		if ("ip vrf " in f_line[i]):
 			pos_vrf_start=i
-			print pos_vrf_start
+			print(pos_vrf_start)
 			break
 		i+=1
 	if pos_vrf_start==0 :
@@ -205,7 +205,7 @@ def main():
 	while (i<numlines):
 		if ("ip dhcp pool " in f_line[i]):
 			pos_dhcp_start=i
-			print pos_dhcp_start
+			print(pos_dhcp_start)
 			break
 		i+=1
 	if pos_dhcp_start==0:
@@ -213,7 +213,7 @@ def main():
 	while (i<numlines):
 		if ("policy-map"==f_line[i].strip().split(" ")[0]):
 			pos_policy_start=i
-			print pos_policy_start
+			print(pos_policy_start)
 			break
 		i+=1
 	if pos_policy_start==0:
@@ -221,7 +221,7 @@ def main():
 	while (i<numlines):
 		if ("l2 vfi " in f_line[i]):
 			pos_vfi_start=i
-			print pos_vfi_start
+			print(pos_vfi_start)
 			break
 		i+=1
 	if pos_vfi_start==0:
@@ -229,7 +229,7 @@ def main():
 	while (i<numlines):
 		if ("interface " in f_line[i]):
 			pos_interface_start=i
-			print pos_interface_start
+			print(pos_interface_start)
 			break
 		i+=1
 	if pos_interface_start==0:
@@ -237,7 +237,7 @@ def main():
 	while (i<numlines):
 		if ("interface Vlan" in f_line[i]):
 			pos_interface_vlan_start=i
-			print pos_interface_vlan_start
+			print(pos_interface_vlan_start)
 			break
 		i+=1
 	if pos_interface_vlan_start==0:
@@ -245,7 +245,7 @@ def main():
 	while (i<numlines):
 		if ("router"==f_line[i].strip().split(" ")[0]):
 			pos_router_start=i
-			print pos_router_start
+			print(pos_router_start)
 			break
 		i+=1
 	if pos_router_start==0:
@@ -253,7 +253,7 @@ def main():
 	while (i<numlines):
 		if ("router bgp " in f_line[i]):
 			pos_router_bgp_start=i
-			print pos_router_bgp_start
+			print(pos_router_bgp_start)
 			break
 		i+=1
 	if pos_router_bgp_start==0:
@@ -261,7 +261,7 @@ def main():
 	while (i<numlines):
 		if ("ip route vrf " in f_line[i]):
 			pos_static_start=i
-			print pos_static_start
+			print(pos_static_start)
 			break
 		i+=1
 	if pos_static_start==0:
@@ -269,7 +269,7 @@ def main():
 	while (i<numlines):
 		if ("ip access-list " in f_line[i]):
 			pos_acl_start=i
-			print pos_acl_start
+			print(pos_acl_start)
 			break
 		i+=1	
 	if pos_acl_start==0:
@@ -277,7 +277,7 @@ def main():
 	while (i<numlines):
 		if ("route-map " in f_line[i]):
 			pos_route_map_start=i
-			print pos_route_map_start
+			print(pos_route_map_start)
 			break
 		i+=1
 	if pos_route_map_start==0:

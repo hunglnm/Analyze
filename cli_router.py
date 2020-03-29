@@ -35,6 +35,6 @@ class CLI_Router:
 
     def getdata(self,result_query):
         for row in result_query:
-            print row #Xu ly truoc khi print
+            print(row) #Xu ly truoc khi print
 
 
