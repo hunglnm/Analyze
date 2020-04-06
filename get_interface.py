@@ -1000,7 +1000,6 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     dict_ifl[temp_ifl_name].Description = re.match('^ description (.*)\n',
                                                                                    list_line[i]).groups()[0]
                                     list_line[i] = "\n"
-
                                 elif re.match('^ ip address (.*)\n',list_line[i]):
                                     if dict_ifl[temp_ifl_name].IP=='':
                                         dict_ifl[temp_ifl_name].IP = re.match('^ ip address (.*)\n',
@@ -1044,10 +1043,14 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     list_line[i] = "\n"
                                 elif re.match(' port trunk allow-pass vlan (.*)\n',list_line[i]):
                                     temp_status = True
+                                    temp_desc=''
                                     temp_ifl_switch_mode= 'trunk'
-                                    if temp_ifl_name in dict_ifl:
-                                        temp_status =dict_ifl[temp_ifl_name].Admin_status
-                                        del dict_ifl[temp_ifl_name] #xoa interface tam
+                                    ##xoa ngay 1/4/2020 do 2 dong trunk allow vlan , khi qua dong 2 xoa sub dong 1, tu line 1048 dej 1053
+                                    #if temp_ifl_name in dict_ifl:
+                                    #    temp_status =dict_ifl[temp_ifl_name].Admin_status
+                                    #    temp_desc = dict_ifl[temp_ifl_name].Description
+                                    #    del dict_ifl[temp_ifl_name] #xoa interface tam
+                                    ##xoa ngay 1/4/2020 do 2 dong trunk allow vlan , khi qua dong 2 xoa sub dong 1
                                     temp_search=re.match(' port trunk allow-pass vlan (.*)\n',list_line[i]).groups()
                                     temp_vlan_list =[]
                                     if ' to ' in temp_search[0]:
@@ -1065,19 +1068,28 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                         temp_vlan_list = temp_search[0].split()
                                     else:
                                         temp_vlan_list.append(temp_search[0])
-                                    #print temp_vlan_list
+                                    #print('line 1067 trong get_interface:',temp_vlan_list,temp_ifl_name)
                                     for item in temp_vlan_list:
                                         temp_ifl = IFL()
                                         temp_ifl.IFD = temp_ifd_name
                                         temp_ifl.Unit = int(item)
                                         temp_ifl.Unit1 = int(item)
                                         temp_ifl.SVLAN = item
+                                        temp_ifl.Description = temp_desc
                                         temp_ifl.Service = 'vpls'
                                         temp_ifl.BD_ID = 'VLAN-' + item
                                         temp_ifl.Admin_status = temp_status
                                         temp_ifl.Switchport = True
                                         temp_ifl.Switch_mode = 'trunk'
-                                        dict_ifl[temp_ifl.IFD + '.' + item] = temp_ifl
+                                        dict_ifl[temp_ifl.IFD + '.' + str(item)] = temp_ifl
+                                        ##Unit = vlan the hien trong temp_ifl_name//31/3/2020
+                                        temp_ifl_name=temp_ifl.IFD + '.' + str(item)
+                                        ##
+                                        #if temp_ifl_name == 'Eth-Trunk6.3021':
+                                        #    print('Line 1083 trong get_interface.py:item',temp_ifl.IFD, item)
+                                        #    print('line 1085 trong get_interface:', temp_vlan_list, temp_ifl_name,
+                                        #          )
+                                        #    dict_ifl[temp_ifl.IFD + '.' + item].showdata()
                                     list_line[i]='\n'
                                 elif re.match(' port default vlan ([\d])*\n',list_line[i]):
                                     #print 'default:',list_line[i]
@@ -1088,17 +1100,23 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     temp_search = re.match(' port default vlan ([\d]*)\n',list_line[i]).groups()
                                     temp_ifl = IFL()
                                     temp_ifl.IFD = temp_ifd_name
-                                    temp_ifl.Unit = int(temp_search[0])
-                                    temp_ifl.Unit1 = int(temp_search[0])
+                                    #port access thi cho unit 0 30/3/2020
+                                    temp_ifl.Unit = 0
+                                    temp_ifl.Unit1 = 0
+                                    #old code: port unit theo vlan
+                                    #temp_ifl.Unit = int(temp_search[0])
+                                    #temp_ifl.Unit1 = int(temp_search[0])
                                     temp_ifl.Admin_status = temp_status
                                     temp_ifl.Switchport = True
                                     #temp_ifl.Switch_mode = 'access'
                                     temp_ifl.SVLAN = temp_search[0]
                                     temp_ifl.Service='vpls'
                                     temp_ifl.BD_ID = 'VLAN-'+temp_search[0]
-                                    dict_ifl[temp_ifl.IFD + '.' + str(temp_ifl.Unit)] = temp_ifl
-                                    #print 'Key:',temp_ifl.IFD + '.' + str(temp_ifl.Unit)
-                                    #dict_ifl[temp_ifl.IFD + '.' + str(temp_ifl.Unit)].showdata()
+                                    dict_ifl[temp_ifl.IFD + '.0'] = temp_ifl
+                                    #if temp_ifl.IFD == 'Eth-Trunk6':
+                                    #    print('Dong 1113 trong get_interface.py:','Key:',temp_ifl.IFD + '.' + str(temp_ifl.Unit))
+
+                                    #    dict_ifl[temp_ifl.IFD + '.' + str(temp_ifl.Unit)].showdata()
                                 elif re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?\n',list_line[i]):
                                     #print i,list_line[i]
                                     temp_search = re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?\n',list_line[i]).groups()
@@ -1161,9 +1179,11 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                             if temp_search[0] in list_policer:
                                                 dict_ifl[temp_ifd_name + '.' + item].Service_pol_out = temp_search[0]
                                             else:
-                                                dict_ifl[temp_ifd_name+'.'+ item].FF_out = temp_search[0]
+                                                if temp_ifd_name+'.'+ item in dict_ifl.keys():
+                                                    dict_ifl[temp_ifd_name + '.' + item].FF_out = temp_search[0]
+                                                else:
+                                                    print("Khong co "+ item+" trong "+ temp_ifd_name, list_line[i])
                                     list_line[i] = '\n'
-
                                 elif re.match(' port isolate-state enable vlan (.*)\n',list_line[i]):
                                     temp_search = re.match(' port isolate-state enable vlan (.*)\n',list_line[i]).groups()
                                     temp_vlan_list = []
@@ -1182,9 +1202,12 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                         temp_vlan_list = temp_search[0].split()
                                     else:
                                         temp_vlan_list.append(temp_search[0])
-                                    #print temp_vlan_list
+                                    #print('line 1196 trong get_interface.py',temp_vlan_list,temp_ifl_name)
                                     for item in temp_vlan_list:
-                                        dict_ifl[temp_ifl.IFD + '.' + item].Split_horizon = True
+                                        #if temp_ifl.IFD=='Eth-Trunk6':
+                                        #    print('line 1203 trong get_interface.py:',item)
+                                        #    dict_ifl[temp_ifl.IFD + '.' + item].showdata()
+                                        dict_ifl[temp_ifl.IFD + '.' + str(item)].Split_horizon = True
                                     list_line[i] = '\n'
                                 elif re.match(' vlan-group (.*)\n',list_line[i]):
                                     temp_name = re.match(' vlan-group (.*)\n',list_line[i]).groups()[0]
@@ -1301,6 +1324,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                                 dict_policy_map[temp_ifl_name + '/' + temp_search[2] + '_out'].Name
                                     list_line[i] = "\n"
                                 elif re.match(' trust upstream [\S]+\n',list_line[i]):
+                                    print('get_inft.py,line 1315',list_line[i])
                                     dict_ifl[temp_ifl_name].trust_upstream = True
                                     list_line[i] = '\n'
                                 elif re.match(' trust 8021p\n',list_line[i]):
@@ -1401,7 +1425,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     list_line[i]='\n'
                                 elif re.match(' isis cost (.*)\n',list_line[i]):
                                     print(list_line[i])
-                                    dict_ifl[temp_ifl_name].Intf_metric= int(re.match(' isis cost (.*)\n',
+                                    dict_ifl[temp_ifl_name].Intf_metric= int(re.match(' isis cost ([0-9]*).*\n',
                                                                              list_line[i]).groups()[0])
                                     list_line[i] = '\n'
                                 elif re.match(' isis authentication-mode md5 .*\n',list_line[i]):
