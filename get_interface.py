@@ -1742,7 +1742,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 #    dict_ifl[key].showdata()
                 #dict_ifl[key].showdata()
             for key in dict_ifl:
-                dict_ifl[key].insert(cursor)
+                #loai bo cac interface ifl ko co service 6/4/2020 line 1745
+                if dict_ifl[key].Service!="":
+                    dict_ifl[key].insert(cursor)
             i = 0
             while i < total_lines:
                 f.write(list_line[i])
