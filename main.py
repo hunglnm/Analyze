@@ -89,6 +89,7 @@ def about_vrf(s_path,conn ,cursor):
             host_dev = get_hostname_from_txt(f_line, numlines)
             Hostname = host_dev[0]
             Device = host_dev[1]
+            #print("line 92 in main.py",Device)
             s_notification = ""
             if Device == "":
                 print("Please check file:", file)

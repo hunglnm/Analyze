@@ -1324,7 +1324,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                                 dict_policy_map[temp_ifl_name + '/' + temp_search[2] + '_out'].Name
                                     list_line[i] = "\n"
                                 elif re.match(' trust upstream [\S]+\n',list_line[i]):
-                                    print('get_inft.py,line 1315',list_line[i])
+                                    #print('get_inft.py,line 1315',list_line[i])
                                     dict_ifl[temp_ifl_name].trust_upstream = True
                                     list_line[i] = '\n'
                                 elif re.match(' trust 8021p\n',list_line[i]):

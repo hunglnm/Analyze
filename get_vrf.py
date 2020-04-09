@@ -152,9 +152,13 @@ def get_vrf_from_log(list_line, hostname, Dev, total_lines, log_path, f_file,con
         elif Dev == 'HW':
             dict_vrf_ie = {}
             while i < total_lines:
-                if (re.match('^(ip-vpn-instance).*\n',list_line[i])):#("ip vpn-instance " in list_line[i]):
+
+                if (re.match('^(ip vpn-instance).*\n',list_line[i])):#("ip vpn-instance " in list_line[i]):
                     temp_vrf = VRF()
                 # add VRF Name
+                    print("Line 158 in get_vrf.py",list_line[i])
+                    if "3G_ZTETEST" in list_line[i]:
+                        print('line 159 in get_vrf.py:',list_line[i])
                     temp_vrf.Name = list_line[i].strip().split(" ")[-1].strip()
                     f.write("\n")
                     i += 1
@@ -195,6 +199,7 @@ def get_vrf_from_log(list_line, hostname, Dev, total_lines, log_path, f_file,con
                             f.write(list_line[i])
                         i += 1
                     i -= 1
+                    #print('Line 200 in get_vrf.py:')
                     #temp_vrf.showdata()
                     temp_vrf.insert(cursor)
                 else:

@@ -1029,16 +1029,26 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                 #print 'Da vao day:',temp_search[0]+'/'+temp_local_as
                                 dict_bgp_group[temp_search[0]+'/'+temp_local_as].Cluster = True
                                 dict_bgp_group[temp_search[0] + '/' + temp_local_as].cluster_id = temp_cluster
-                        elif re.match(' ipv4-family vpn-instance ([\S]*)\n',list_line[i]):
-                            temp_search = re.match(' ipv4-family vpn-instance ([\S]*)\n',list_line[i]).groups()
-                            #print 'BGP VPN:',temp_search
-                            temp_vrf_name = temp_search[0]
+                        elif re.match('  peer ([\S]*) default-originate vpn-instance (.*)\n',list_line[i]):
+                            temp_search = (None,'0.0.0.0',None)
+                            temp_vrf_name = re.match('  peer ([\S]*) default-originate vpn-instance (.*)\n',list_line[i]).groups()[1]
                             temp_vrf = VRF()
                             temp_vrf.Name = temp_vrf_name
                             dict_vrf[temp_vrf_name] = temp_vrf
+                            temp_seq = 0
+                            check_vrf_ie(temp_search, dict_policy_map, dict_vrf_ie, temp_seq, temp_vrf_name)
+                            list_line[i] = '\n'
+                        elif re.match(' ipv4-family vpn-instance ([\S]*)\n',list_line[i]):
+                            temp_search = re.match(' ipv4-family vpn-instance ([\S]*)\n',list_line[i]).groups()
+                            temp_vrf_name = temp_search[0]
+                            #print 'BGP VPN:',temp_search
+                            if temp_vrf_name not in dict_vrf:
+                                temp_vrf = VRF()
+                                temp_vrf.Name = temp_vrf_name
+                                dict_vrf[temp_vrf_name] = temp_vrf
+                                temp_seq = 0
                             list_line[i]='\n'
                             i += 1
-                            temp_seq = 0
                             temp_key = temp_vrf.Name + '_' + 'default_exp' + str(temp_seq)
                             while (list_line[i]!=' #\n')and(list_line[i]!='#\n'):
 
