@@ -1698,6 +1698,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                         temp_ifl.Unit = dict_ifl[key].Unit
                         temp_ifl.Unit1 = dict_ifl[key].Unit
                         temp_ifl.VRF_Name = dict_ifl[key].VRF_Name
+                        temp_ifl.Service = "L3VPN"
                         temp_ifl.df_classifier = dict_ifl[key].df_classifier
 
                         if dict_ifl[key].IP!='':
