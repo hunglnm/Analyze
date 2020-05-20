@@ -1738,7 +1738,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 elif (dict_ifl[key].IP_helper != ''):
                     print('Xay ra truong hop dhcp global')
                     dict_ifl[key].showdata()
-
+                elif ('Vlanif' in key) and(dict_ifl[key].IP_helper==''):# and (dict_ifl[key].IP!=''):
+                    dict_ifl[key].Stitching = True
+                    dict_ifl[key].Service='l3/vpls'
                 #if dict_ifl[key].IFD=='Loopback':
                 #    dict_ifl[key].showdata()
                 #dict_ifl[key].showdata()

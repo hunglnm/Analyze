@@ -318,11 +318,11 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                         elif re.match(' loop-detect .*\n',list_line[i]):
                             temp_vsi.loop_detect = True
                             list_line[i]='\n'
-                        elif re.match('  peer ([\S]*)(?: negotiation-vc-id ([\d]*))?(?: tnl-policy ([\S]*))?(?: (upe))?(?: pw pw1)?\n',
+                        elif re.match('  peer ([\S]*)(?: negotiation-vc-id ([\d]*))?(?: tnl-policy ([\S]*))?(?: (upe))?(?: pw pw1)?( )?\n',
                                       list_line[i]):
                             temp_l2vpn = L2VPN()
                             temp_str = re.match('  peer ([\S]*)(?: negotiation-vc-id ([\d]*))?(?: tnl-policy ([\S]*))?'
-                                                '(?: (upe))?(?: pw pw1)?\n', list_line[i]).groups()
+                                                '(?: (upe))?(?: pw pw1)?( )?\n', list_line[i]).groups()
                             temp_l2vpn.Peer=temp_str[0]
                             temp_l2vpn.Name =temp_vsi.name
                             temp_l2vpn.BD_ID = temp_vsi.name
@@ -366,9 +366,9 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                     i -= 1
                 i += 1
             for key in list_l2vpn:
-
                 list_l2vpn[key].insert(cursor)
             for key in list_peer:
+                #print('line 371 in get_l2vpn.py:',key, list_peer[key].showdata())
                 list_peer[key].insert(cursor)
             i = 0
             while i < total_lines:
