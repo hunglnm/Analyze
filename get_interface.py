@@ -1678,6 +1678,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 dict_l2vpn[key].insert(cursor)
             print('Data LSP:processing')
             for key in dict_lsp:
+                dict_lsp[key].showdata()
                 dict_lsp[key].insert(cursor)
             print('Data BFD:processing')
             for key in dict_bfd:
@@ -1745,6 +1746,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 #    dict_ifl[key].showdata()
                 #dict_ifl[key].showdata()
             for key in dict_ifl:
+                #dict_ifl[key].showdata()
                 #loai bo cac interface ifl ko co service 6/4/2020 line 1745
                 if dict_ifl[key].Service!="":
                     dict_ifl[key].insert(cursor)

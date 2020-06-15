@@ -87,7 +87,9 @@ def get_lsp_path_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cur
                     temp_path.Name = temp_search[0]
                     temp_path_name = temp_search[0]
                     temp_path.Admin_status=True
+                    #temp_path.showdata()
                     temp_path.insert(cursor)
+
                     list_line[i]='\n'
                     temp_index = 0
                     i +=1
@@ -98,6 +100,7 @@ def get_lsp_path_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cur
                             temp_path_detail.Index_1 = temp_index
                             temp_path_detail.Name = temp_path_name
                             temp_path_detail.NH = temp_search[0]
+                            #temp_path_detail.showdata()
                             temp_path_detail.insert(cursor)
                             temp_index += 1
                             list_line[i] = "\n"

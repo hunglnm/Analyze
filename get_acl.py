@@ -309,8 +309,9 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
             dict_acl = {}
             dict_acl_detail = {}
             while i < total_lines:
-                if re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]):
-                    temp_search = re.match('^acl(?: name ([\S]*))? number (.*)\n', list_line[i]).groups()
+                #re.match('^acl(?: name ([\S]*))? number (.*)\n'
+                if re.match('^acl(?: name ([\S]*))?(?: number (.*))?(.*)?\n', list_line[i]):
+                    temp_search = re.match('^acl(?: name ([\S]*))?(?: number (.*))?(.*)?\n', list_line[i]).groups()
                     if temp_search[0] is not None:
                         temp_acl_name = temp_search[0].strip()
                     else:
