@@ -340,12 +340,12 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                     temp_policy_map_name = list_line[i].strip().split()[-1]
                     i += 1
                     while (list_line[i]!='#\n')and(not re.match('^traffic policy .*\n',list_line[i])):
-                        if re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]):
+                        if re.match(' classifier ([\S]+) behavior ([\S]+)( .*)?\n',list_line[i]):
                             #print '1 Policy duoc tao ra:'
                             temp_policy_map = Policy_map()
                             temp_policy_map.Name=temp_policy_map_name
-                            temp_class_name = re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]).group(1)
-                            temp_ba_name = re.match(' classifier ([\S]+) behavior ([\S]+)\n',list_line[i]).group(2)
+                            temp_class_name = re.match(' classifier ([\S]+) behavior ([\S]+)( .*)?\n',list_line[i]).group(1)
+                            temp_ba_name = re.match(' classifier ([\S]+) behavior ([\S]+)( .*)?\n',list_line[i]).group(2)
                             if temp_class_name in list_class:
                                 temp_policy_map.Class = list_class[temp_class_name].name
                                 temp_policy_map.acl = list_class[temp_class_name].acl
