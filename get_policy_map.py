@@ -269,7 +269,6 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                     list_class[temp_classifier.name]=temp_classifier
                     i -= 1
                 elif re.match('traffic behavior .*',list_line[i]):
-                    #print 'Match BA:', i, list_line[i]
                     temp_behavior = behaviour()
                     temp_behavior.name = list_line[i].strip().split()[-1]
                     i += 1
@@ -323,10 +322,10 @@ def get_policy_map_from_log(list_line,hostname,Dev,total_lines,log_path, conn, c
                         elif re.match('remark mpls-exp (.*)',list_line[i].strip()):
                             temp_behavior.remark_exp=re.match('remark mpls-exp (.*)',list_line[i].strip()).group(1)
                             list_line[i] = '\n'
-                        elif re.match(' service-class ([\S]+) color ([\S]+)\n',list_line[i]):
-                            temp_behavior.service_class = re.match(' service-class ([\S]+) color ([\S]+)\n',
+                        elif re.match(' service-class ([\S]+) color ([\S]+)( )?\n',list_line[i]):
+                            temp_behavior.service_class = re.match(' service-class ([\S]+) color ([\S]+)(?: )?\n',
                                                                   list_line[i]).groups()[0]
-                            temp_behavior.green = re.match(' service-class ([\S]+) color ([\S]+)\n',
+                            temp_behavior.green = re.match(' service-class ([\S]+) color ([\S]+)(?: )?\n',
                                                                   list_line[i]).groups()[1]
                             list_line[i] = '\n'
                         i += 1
