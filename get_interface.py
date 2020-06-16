@@ -1555,9 +1555,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                 temp_lsp.Src = temp_search[0]
                             if temp_search[1] is not None:
                                 temp_lsp.Src = temp_search[1]
-                        elif re.match(' mpls te path explicit-path ([\S]*)( secondary)?\n',list_line[i]):
-                            #print list_line[i]
-                            temp_search = re.match(' mpls te path explicit-path ([\S]*)( secondary)?\n',
+                        elif re.match(' mpls te path explicit-path ([\S]*)(?:  )?( secondary)?\n',list_line[i]):
+                            #print(list_line[i])
+                            temp_search = re.match(' mpls te path explicit-path ([\S]*)(?:  )?( secondary)?\n',
                                                    list_line[i]).groups()
                             if temp_search[1] is not None:
                                 temp_lsp.Backup_path = temp_search[0]
