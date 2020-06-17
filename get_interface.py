@@ -1349,9 +1349,9 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     dict_ifl[temp_ifl_name].ARP_exp = int(re.match(' arp expire-time ([\d]+)\n',
                                                                                    list_line[i]).groups()[0])
                                     list_line[i]='\n'
-                                elif re.match(' mpls l2vc ((?:[\d]{1,3}[\.]){3,3}[\d]{1,3}) ([\d]*)(?: tunnel-policy ([\S]+))?'
+                                elif re.match(' mpls l2vc(?: instance-name [\S]*)? ((?:[\d]{1,3}[\.]){3,3}[\d]{1,3}) ([\d]*)(?: tunnel-policy ([\S]+))?'
                                               '( no-control-word| control-word)?\n', list_line[i]):
-                                    temp_search = re.match(' mpls l2vc ((?:[\d]{1,3}[\.]){3,3}[\d]{1,3}) ([\d]*)(?: tunnel-policy ([\S]+))?'
+                                    temp_search = re.match(' mpls l2vc(?: instance-name [\S]*)? ((?:[\d]{1,3}[\.]){3,3}[\d]{1,3}) ([\d]*)(?: tunnel-policy ([\S]+))?'
                                                            '( no-control-word| control-word)?\n', list_line[i]).groups()
                                     temp_l2vpn = L2VPN()
                                     temp_l2vpn.Peer = temp_search[0]
