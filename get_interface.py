@@ -899,8 +899,8 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
             temp_ifd.MX_IFD = "irb"
             list_ifd[temp_ifd.Name] = temp_ifd
             while i < total_lines:
-                if re.match('interface ((?:Eth-Trunk|GigabitEthernet)[\d]{1,}[^\.]?(?:\/[\d]{1,}){0,2})\n', list_line[i]):
-                    tmp_result = re.match('interface ((?:Eth-Trunk|GigabitEthernet)[\d]{1,}[^\.]?(?:\/[\d]{1,}){0,2})\n', list_line[i]).groups()
+                if re.match('interface ((?:Eth-Trunk|GigabitEthernet|100GE)[\d]{1,}[^\.]?(?:\/[\d]{1,}){0,2})\n', list_line[i]):
+                    tmp_result = re.match('interface ((?:Eth-Trunk|GigabitEthernet|100GE)[\d]{1,}[^\.]?(?:\/[\d]{1,}){0,2})\n', list_line[i]).groups()
                     #print tmp_result.groups()
                     temp_ifd = IFD()
                     while list_line[i] != '#\n':
@@ -948,11 +948,11 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                 i += 1
             i = 0
             while i < total_lines:
-                if re.match('interface ((?:Eth-Trunk|GigabitEthernet|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
+                if re.match('interface ((?:Eth-Trunk|GigabitEthernet|100GE|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
                             list_line[i]):
                     print(list_line[i])
                     if list_line[i+1]!='#\n':
-                        tmp_result = re.match('interface ((?:Eth-Trunk|GigabitEthernet|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
+                        tmp_result = re.match('interface ((?:Eth-Trunk|GigabitEthernet|100GE|LoopBack|Vlanif)[\d]{1,}(?:\/[\d]{1,}){0,2})[\.]?([\d]*)\n',
                                 list_line[i])
                         tmp_str = tmp_result.groups()[0]
 
