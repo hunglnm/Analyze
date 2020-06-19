@@ -882,7 +882,7 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                   "where Hostname = '%s' and ( ACL='' or ACL='any') and CIR > 0 group by Name" % hostname
             cursor.execute(sql)
             list_rows = cursor.fetchall()
-            list_policer = list([x[0] for x in list_rows])
+            list_policer = list([x[0].decode() for x in list_rows])
             dict_ifl = {} #chua ifl information
             dict_policy_map = {} #chua policy map tren interface truc tiep
             dict_l2vpn = {} #chua l2
@@ -1117,9 +1117,10 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                     #    print('Dong 1113 trong get_interface.py:','Key:',temp_ifl.IFD + '.' + str(temp_ifl.Unit))
 
                                     #    dict_ifl[temp_ifl.IFD + '.' + str(temp_ifl.Unit)].showdata()
-                                elif re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?\n',list_line[i]):
-                                    #print i,list_line[i]
-                                    temp_search = re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?\n',list_line[i]).groups()
+                                elif re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?(?: )?\n',list_line[i]):
+                                    if temp_ifd_name=='Eth-Trunk15':
+                                        print('line 1122 in get_interface.py:',list_line[i])
+                                    temp_search = re.match(' traffic-policy ([\S]*) (inbound|outbound)(?: link-layer)?(?: )?\n',list_line[i]).groups()
                                     if (len(temp_vlan_list)>0)and((temp_ifd_name+'.0')==temp_ifl_name):
                                         for idx in temp_vlan_list:
                                             if temp_search[1] == 'inbound':

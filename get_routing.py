@@ -875,6 +875,18 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                         temp_static.description = temp_search[6]
                     list_static.append(temp_static)
                     list_line[i] = '\n'
+                #them moi 19/06/2020
+                elif re.match('[\s]?ip route-static(?: vpn-instance ([\S]*))? ((?:[\d]{1,3}[\.]){3}[\d]{1,3} '
+                            '(?:[\d]{1,3}[\.]){3}[\d]{1,3}) NULL0\n',list_line[i]):
+                    temp_search = re.match('[\s]?ip route-static(?: vpn-instance ([\S]*))? ((?:[\d]{1,3}[\.]){3}[\d]{1,3} '
+                            '(?:[\d]{1,3}[\.]){3}[\d]{1,3}) NULL0\n', list_line[i]).groups()
+                    temp_static = Static_Route()
+                    temp_static.Net = temp_search[1]
+                    if temp_search[0] is not None:
+                        temp_static.VRF_Name = temp_search[0]
+                        temp_static.NH = ''
+                    list_static.append(temp_static)
+                    list_line[i] = '\n'
                 elif re.match('^isis ([\S]*)\n', list_line[i]):
                     temp_isis = ISIS()
                     temp_isis.Name = re.match('^isis (.*)\n', list_line[i]).groups()[0]
