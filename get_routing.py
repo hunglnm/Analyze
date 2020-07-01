@@ -220,7 +220,6 @@ def get_static_route2(str1):
 
 
 def check_vrf_ie(temp_search,temp_dict_policy_map,temp_dict_vrf_ie,temp_seq_1,temp_vrf_name):
-
     temp_vrf_ie = VRF_IE()
     temp_vrf_ie.Name = temp_vrf_name + '_' + str(temp_seq_1)
     temp_vrf_ie.VRF_Name = temp_vrf_name
@@ -233,7 +232,10 @@ def check_vrf_ie(temp_search,temp_dict_policy_map,temp_dict_vrf_ie,temp_seq_1,te
     if temp_search[2] is not None:
         for key in temp_dict_policy_map:
             if re.match(temp_search[2] + '/', key):
-                temp_vrf_ie.ACL = temp_dict_policy_map[key].ACL
+                if temp_vrf_ie.ACL=='':
+                    temp_vrf_ie.ACL = temp_dict_policy_map[key].ACL
+                else:
+                    temp_vrf_ie.ACL += '//' + temp_dict_policy_map[key].ACL
                 temp_vrf_ie.Action = temp_dict_policy_map[key].Action_1
         check_exist = False
         for key in temp_dict_vrf_ie:
@@ -1072,7 +1074,7 @@ def get_routing_from_log(list_line,hostname,Dev,total_lines,log_path,conn,cursor
                                                            '(?:network ((?:[\d]{1,3}[\.]){3}[\d]{1,3}(?: '
                                                            '(?:[\d]{1,3}[\.]){3}[\d]{1,3})?))?'
                                                            '(?: route-policy ([\S]*))?\n',list_line[i]).groups()
-                                    #print 'Gia tri seq bat dau:',temp_seq,list_line[i]
+                                    print('Line 1075 in get_routing.py, Gia tri seq bat dau:', temp_seq, list_line[i])
                                     check_vrf_ie(temp_search,dict_policy_map,dict_vrf_ie,temp_seq,temp_vrf_name)
                                     temp_seq +=1
                                     #print 'Ket qua out:'
