@@ -336,9 +336,9 @@ def get_l2vpn_from_log(list_line, hostname, Dev, total_lines, log_path,conn, cur
                             if temp_str[3] is not None:
                                 temp_l2vpn.UPE = True
                             list_line[i]='\n'
-                            if 'secondary\n' in list_line[i+1]:
+                            if 'secondary' in list_line[i+1]:
                                 temp_str = re.match('  peer ([\S]*)(?: negotiation-vc-id ([\d]*))?(?: encapsulation [\S]*)?(?: tnl-policy '
-                                                    '([\S]*))?(?: (upe))?(?: pw pw1)? secondary\n',
+                                                    '([\S]*))?(?: (upe))?(?: pw pw1)? secondary(?: )?\n',
                                                     list_line[i+1]).groups()
                                 temp_l2vpn.BK_Peer = temp_str[0]
                                 if temp_str[1] is not None:
