@@ -1518,6 +1518,35 @@ def get_interface_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cu
                                         dict_ifl[temp_ifl_name].vrrp_reduce = dict_ifl[temp_ifl_name].vrrp_reduce +\
                                                                               +'/' + temp_search[0] + '_' + temp_search[2]
                                     list_line[i] = '\n'
+                                elif re.match(' user-queue cir ([\d]*) pir ([\d]*) (inbound|outbound) \n', list_line[i]):
+                                    # print 'Kiem tra policy:',list_line[i]
+                                    temp_search = re.match(' user-queue cir ([\d]*) pir ([\d]*) (inbound|outbound) \n'
+                                                           , list_line[i]).groups()
+                                    list_line[i] = '\n'
+                                    temp_policy_map = Policy_map()
+                                    temp_policy_map.Name = temp_search[0] + '_' + temp_search[1]
+                                    temp_policy_map.CIR = int(temp_search[0])
+                                    temp_policy_map.PIR = int(temp_search[1])
+                                    if temp_search[2] is not None:
+                                        if temp_search[2] == 'inbound':
+                                            if temp_ifl_name == temp_ifd_name + '.0':
+                                                dict_policy_map[
+                                                    temp_ifd_name + '/' + temp_name + '_in'] = temp_policy_map
+                                            else:
+                                                dict_policy_map[
+                                                    temp_ifl_name + '/' + temp_name + '_in'] = temp_policy_map
+                                            dict_ifl[temp_ifl_name].Service_pol_in=dict_policy_map[
+                                                    temp_ifl_name + '/' + temp_name + '_in'].Name
+                                        elif temp_search[2] == 'outbound':
+                                            if temp_ifl_name == temp_ifd_name + '.0':
+                                                dict_policy_map[
+                                                    temp_ifd_name + '/' + temp_name + '_out'] = temp_policy_map
+                                            else:
+                                                dict_policy_map[
+                                                    temp_ifl_name + '/' + temp_name + '_out'] = temp_policy_map
+                                            dict_ifl[temp_ifl_name].Service_pol_out = dict_policy_map[
+                                                temp_ifl_name + '/' + temp_name + '_out'].Name
+                                    list_line[i] = '\n'
                                 elif re.match(' loop-detect enable\n',list_line[i]):
                                     if (len(temp_vlan_list)>0)and((temp_ifd_name+'.0')==temp_ifl_name):
                                         for idx in temp_vlan_list:
