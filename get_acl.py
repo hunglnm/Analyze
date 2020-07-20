@@ -405,13 +405,12 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                 temp_acl_detail.Option_1 = temp_search[7]
                             dict_acl_detail[temp_acl_detail.Name + '/' + temp_acl_detail.Index_1] = temp_acl_detail
                             list_line[i] = '\n'
-                        elif re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
-                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4} '
-                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?[\s]*\n',list_line[i]):
-                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}'
-                                                   '\-){2,2}[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}'
-                                                   '[A-Fa-f0-9]{4,4}))?(?: dest-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}'
-                                                   '[A-Fa-f0-9]{4,4} (?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}))?[\s]*\n',
+                        elif re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}(?: '
+                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4})?))?(?: (?:dest-mac|destination-mac) ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}(?: '
+                                      '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4})?))?[\s]*\n',list_line[i]):
+                            temp_search = re.match(' rule ([\d]+) (deny|permit)(?: source-mac ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}(?: '
+                                                    '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4})?))?(?: (?:dest-mac|destination-mac) ((?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4}(?: '
+                                                    '(?:[A-Fa-f0-9]{4,4}\-){2,2}[A-Fa-f0-9]{4,4})?))?[\s]*\n',
                                                    list_line[i]).groups()
                             temp_acl_detail = ACL_detail()
                             temp_acl_detail.Name = temp_acl_name
@@ -444,7 +443,7 @@ def get_acl_from_log(list_line,hostname,Dev,total_lines,log_path, conn, cursor):
                                 temp_acl_detail.VRF_Name = temp_search[2]
                             if temp_search[3] is not None:
                                 print('Chua tao attribute Fragment')
-                            #print 'DK1:'
+                            #print 'DK1:'r
                             #temp_acl_detail.showdata()
                             dict_acl_detail[temp_acl_detail.Name+'/'+temp_acl_detail.Index_1] = temp_acl_detail
                             list_line[i] = '\n'
